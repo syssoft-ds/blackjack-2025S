@@ -1,0 +1,42 @@
+Blatt 5
+Rechnernetze
+Peter Kessler
+1593158
+
+################################################################################################
+
+Nr 2)
+
+-Verbindungsaufbau muss kompatibel sein
+
+-Menge der Befehle und wie diese gesendet & gelesen werden, muss klar sein
+
+	--> z.B. gemeinsame Spezifikationen einhalten
+
+Nr. 3)
+
+-Python Code siehe Anhang
+
+Startparameter:
+	python Croupier.py --listen_ip 127.0.0.1 --listen_port 12345 --num_decks 6 --min_players_to_start 2
+
+	-listen_ip: IP, auf der der Croupier lauscht (default: 127.0.0.1)
+	-listen_port: Port (default: 12345)
+	-num_decks: Anzahl der Karten-Decks (default: 6)
+	-min_players_to_start: Mindestanzahl aktiver Spieler (default: 1)
+
+Ausgehende Nachrichten an Spieler:
+	-deal_cards
+	-game_update
+	-game_result
+	-round_ended
+	-cards_dealt_update
+	-deck_info_response
+	-reshuffle
+
+
+Nr. 4)
+-Wir haben die Programme an einem Tag zusammen erarbeitet, wodurch wir uns sehr ´
+ einfach über Spezifikationen, Befehlen usw. absprechen konnten. Über das Uni-Netz
+ haben wir das Programm nicht zum laufen bekommen, über de nRouter bei einem Zuhause
+ ging es dann aber.
