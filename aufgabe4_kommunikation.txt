@@ -1,0 +1,6 @@
+Ich habe mir die Ideen der anderen Studenten angeschaut und überlegt, wie meine Implementierung mit deren Programmen zusammenarbeiten kann.
+Ich habe eine KartenzaehlerUDP Klasse geschrieben. Sie registriert sich beim Croupier, kann auf Anfragen zur Strategie (rat) oder Statistik reagieren und schickt passende Antworten zurück. 
+Die Registrierung sollte ohne Probleme funktionieren, weil ich das richtige Nachrichtenformat benutze. Aber mein Kartenzaehler gibt nur einfache Tipps wie hit oder stand. 
+Empfehlungen wie "double down" oder wie viel man setzen soll, werden nicht unterstützt. Der Spieler bekommt also nicht immer eine vollständige Hilfe.
+Außerdem unterstützt mein Spiel derzeit nur einen Spieler gegen den Croupier. Andere Studenten haben vielleicht Programme mit mehreren Spielern, bei denen der Croupier sagen kann, wer am Zug ist. Dabei kann es zu Missverständnissen kommen.
+Auch einige Befehle oder Nachrichten könnten bei mir anders aussehen als bei anderen. Deswegen ist es wichtig, ein gemeinsames Format zu finden.

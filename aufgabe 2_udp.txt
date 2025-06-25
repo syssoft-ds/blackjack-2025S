@@ -1,0 +1,12 @@
+Aufgabe 2: UDP
+
+Wie in der vorherigen Übung schlage ich vor, ein gemeinsames Nachrichtenprotokoll mit den bestimmten Befehlen zu erstellen. 
+Wir haben drei Klassen Croupier, Spieler und Kartenzähler, die per UDP miteinander kommunizieren müssen.
+
+Ich setze Croupier als Server ein. Er gibt beim Start seinen Port bekannt und wartet auf eingehende Nachrichten von Clients (Spieler und Kartenzähler).
+Spieler und Kartenzähler müssen sich zuerst beim Croupier registrieren, z.B. mit dem Befehl register <name> <ip> <port>. Unter name steht spieler/kartenzaehler.
+Dann kann der Croupier das Spiel mit start blackjack starten und er sendet an Clients Info über verteilte Karten, z.B. karte <spielername> <rang> <typ>.
+Der Spieler sendet, was er machen möchte, z.B. aktion <name>, wo man unter name hit/stand/double/surrender/rat/hilfe/statistik tippen kann.
+Nach jeder Spielrunde informiert der Croupier den Spieler und den Kartenzähler über das Ergebnis mit Befehl ergebnis <name> <status> und fragt die Statistik des Spieles mit aktion statistik ab.
+
+
