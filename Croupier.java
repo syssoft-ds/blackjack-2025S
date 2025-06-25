@@ -71,10 +71,10 @@ public class Croupier extends Spieler {
 
     public void bewerteSpieler(Spieler spieler) {
         int spielerWert = spieler.berechneWertDerHand();
-        int dealerWert = berechneWertDerHand();
+        int croupierWert = berechneWertDerHand();
 
         boolean spielerBlackjack = spielerWert == 21 && spieler.getHand().size() == 2;
-        boolean crupierBlackjack = dealerWert == 21 && getHand().size() == 2;
+        boolean crupierBlackjack = croupierWert == 21 && getHand().size() == 2;
 
         if (spielerBlackjack && !crupierBlackjack) {
             System.out.println("Spieler hat BlackJack!");
@@ -91,12 +91,12 @@ public class Croupier extends Spieler {
             spieler.verlust();
             zaehler.spielErgebnis(false, false);
             siegeInFolge = 0;
-        } else if (dealerWert > 21 || spielerWert > dealerWert) {
+        } else if (croupierWert > 21 || spielerWert > croupierWert) {
             System.out.println("Spieler gewinnt.");
             spieler.gewinn(false);
             zaehler.spielErgebnis(true, false);
             siegeInFolge++;
-        } else if (spielerWert < dealerWert) {
+        } else if (spielerWert < croupierWert) {
             System.out.println("Croupier gewinnt.");
             spieler.verlust();
             zaehler.spielErgebnis(false, false);
