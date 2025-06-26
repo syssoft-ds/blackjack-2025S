@@ -1,0 +1,18 @@
+@startuml Bust
+actor Spieler
+participant Croupier
+participant Kartenzähler
+
+loop Punkte =< 21 
+opt Empfehlung abfragen
+Spieler -> Kartenzähler: Empfehlung abfragen
+Kartenzähler -> Spieler: Empfehlung Hit
+end
+Spieler -> Croupier : Hit
+Croupier -> Spieler : Karte
+Croupier -> Kartenzähler: Statistik aktualisieren
+end
+
+Croupier -> Spieler : "Bust" (automatisch verloren)
+Croupier -> Kartenzähler : Statistik aktualisieren
+@enduml

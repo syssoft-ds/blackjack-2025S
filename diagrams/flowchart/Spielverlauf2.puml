@@ -1,0 +1,53 @@
+@startuml Spielverlauf2
+    start
+        group Registrierung beim Kartenzähler
+        :Spielerliste an Kartenzähler senden;
+        repeat
+            :Kartenzähler registriert sich bei Spieler;
+            if (Registrierung erfolgreich) then (nein)
+                :Croupier entfernt Spieler;
+                :Kartenzähler entfernt Spieler aus Spielerliste;
+                if(Spielerliste=leer)then (ja)
+                    stop
+                endif
+            else (ja)
+                :Kartenzähler registriert Spieler;
+            endif
+        repeat while(Alle Spieler in Spielerliste registriert) is (nein) not (ja)
+        end group
+
+        group Karten verteilen
+        repeat
+            repeat
+                :Karte an Spieler austeilen;
+                :update Statistik;
+            repeat while (alle Spieler haben eine Karte) is (nein) not (ja)
+            if (Croupier hat keine Karte) then (ja)
+                :Karte an Croupier verdeckt austeilen;
+                :update Statistik;
+            else (nein)
+                :Karte an Croupier austeilen;
+            endif
+        repeat while (alle Spieler haben 2 Karten) is (nein) not (ja)
+        end group
+
+    group BlackJack
+    if(Spieler oder Croupier hat black jack) then (ja)
+        :Gewinne verteilen;
+        :update Statistik;
+        stop
+    else (nein)
+    endif
+    end group
+
+    group late surrender
+    repeat
+        if(Surrender) then (ja) 
+            :Spieler bust=true;
+        else(nein)
+        endif
+        :Surrender abgefragt = true;
+    repeat while (Surrender für alle Spieler abgefragt) is (nein) not (ja)
+    end group
+stop
+@enduml

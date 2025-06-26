@@ -1,0 +1,45 @@
+@startuml
+
+actor Croupier
+participant Kartenzähler
+participant Spieler
+
+alt Boxinhaber signalisiert Spielstart && Kartenzähler registriert
+
+    Croupier -> Kartenzähler : Spieler-Liste senden
+    loop noch unregistrierte Spieler
+        Kartenzähler -> Spieler : Registrierungsanfrage
+        alt timeout
+            Kartenzähler -> Croupier: Registrierung löschen
+            Croupier -> Croupier: entfernt Spieler
+            Croupier -> Kartenzähler: Spieler entfernt
+            Kartenzähler -> Kartenzähler: entfernt Spieler aus Spieler-Liste
+            alt Spieler-Liste = leer
+                Kartenzähler -> Croupier: return Spielabbruch
+            end
+        else
+            Spieler -> Kartenzähler : ACK
+            Kartenzähler -> Kartenzähler: Spieler registriert
+        end
+    end
+
+    loop Dealen in 2 Runden
+
+        loop Spieler ohne Karte | Croupier hat noch keine Karte
+                Croupier -> Spieler : Karte
+                Croupier -> Kartenzähler: Statistik aktualisieren
+        end
+        alt Runde != 2
+            Croupier -> Croupier: Karte (verdeckt)
+            Croupier -> Kartenzähler: Statistik aktualisieren
+
+        else
+        Croupier -> Croupier: Karte
+        end
+    end
+
+else
+    Croupier -> Spieler: warten auf Kartenzähler
+end
+
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+actor Kartenzähler
+participant Croupier
+
+Kartenzähler -> Croupier: Registrieren
+
+alt Kartenzähler bereits registriert
+    Croupier -> Kartenzähler: NACK
+    Croupier -> Kartenzähler: Kartenzähler vorhanden
+else
+    Kartenzähler -> Croupier: ACK    
+end
+@enduml

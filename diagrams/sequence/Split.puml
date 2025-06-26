@@ -1,0 +1,47 @@
+@startuml Split
+actor Spieler
+participant Croupier
+participant Kartenzähler
+
+alt Blatt = Paar
+    alt Empfehlung abfragen
+        Spieler -> Kartenzähler : Empfehlung abfragen
+        Kartenzähler -> Spieler : Empfehlung: Split
+    end
+
+    Spieler -> Croupier : Split
+    Croupier -> Spieler : splits hand
+    Croupier -> Spieler : Karte Hand 1
+    Croupier -> Spieler : Karte Hand 2
+    loop more hands
+        alt Empfehlung folgen
+            Spieler -> Kartenzähler: Empfehlung abfragen
+            Kartenzähler -> Spieler: Empfehlung mitteilen
+
+            alt Empfehlung = Stand && Spieler sendet Stand
+                Spieler -> Croupier: Stand
+            else alt Empfehlung = Hit && Spieler sendet Hit
+                Spieler -> Spieler: spielt Hit 
+            else alt Empfehlung = Double Down && Spieler sendet Double Down
+                Spieler -> Spieler: spielt Double Down
+            else Empfehlung = Split && Spieler sendet Split
+                Spieler -> Croupier: resplit
+                Spieler -> Croupier: wiederholter Einsatz 
+                Spieler -> Spieler: spielt Split
+            end
+        else
+            alt Spieler sendet Stand
+                Spieler -> Croupier: Stand
+            else Spieler sendet Hit
+                Spieler -> Spieler: spielt Hit 
+            else Spieler sendet Double Down
+                Spieler -> Spieler: spielt Double Down
+            else Spieler sendet split && Blatt = Paar
+                Spieler -> Croupier: resplit
+                Spieler -> Croupier: wiederholter Einsatz 
+                Spieler -> Spieler: spielt Split
+            end
+        end
+    end
+end
+@enduml

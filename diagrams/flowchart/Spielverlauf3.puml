@@ -1,0 +1,96 @@
+@startuml Spielverlauf3
+start
+    repeat
+        group Empfehlung
+        if(Empfehlung?) then (ja)
+            :Kartenzähler schickt Empfehlung;
+        else(nein)
+        endif
+        end group
+        
+        if(Double Down) then (ja)
+        group Double Down
+            :Einsatz verdoppeln;
+            :Karte ziehen;
+            :update Statistik;
+            :Spieler Stand = true;
+        end group
+        elseif(Hit?) then (ja)
+        group Hit
+            repeat
+                group Empfehlung
+                    if(Empfehlung?) then (ja)
+                        :Kartenzähler schickt Empfehlung;
+                    else(nein)
+                    endif
+                end group
+                :Einsatz;
+                :zieht Karte;
+                :update Statistik;
+            repeat while(Hit && Punkte <= 21 && Stand=false) is(ja) not (nein)
+            if(Punkte > 21) then (ja)
+                :Spieler bust=true;
+            endif
+            :Spieler Stand=true;
+        end group
+        elseif (Split?) then(ja)
+        group Split
+            :split Hand;
+            repeat
+                group Empfehlung
+                    if(Empfehlung?) then (ja)
+                        :Kartenzähler schickt Empfehlung;
+                    else(nein)
+                    endif
+                end group
+                if(Hit?) then (ja)
+                    repeat
+                        group Empfehlung
+                            if(Empfehlung?) then (ja)
+                                :Kartenzähler schickt Empfehlung;
+                            else(nein)
+                            endif
+                        end group
+                        :Einsatz;
+                        :zieht Karte;
+                        :update Statistik;
+                    repeat while(Hit && Punkte <= 21 && Stand=false) is(ja) not (nein)
+                    if(Punkte > 21) then (ja)
+                        :Spieler bust=true;
+                    endif
+                    :Spieler Stand=true;
+                elseif(Split?) then (ja)
+                group resplit
+                    :erneuter Einsatz;
+                    :split Hand;
+                end group
+                else(Stand)
+                endif
+            repeat while(Spieler hat offene Hand) is (ja) not (nein)
+        end group
+        else (nein, Stand)
+            :Spieler Stand=true;
+        endif
+    repeat while (Alle Spieler haben gespielt) is (nein) not (ja)
+    group Croupier
+    repeat
+        group Empfehlung
+            if(Empfehlung?) then (ja)
+                :Kartenzähler schickt Empfehlung;
+            else(nein)
+            endif
+        end group
+        if (Hit?) then (ja)
+            :zieht Karte;
+            :update Statistik;
+        else (Croupier Stand=true)
+        endif
+    repeat while (Punkte Croupier <17 && Croupier Stand=false) is(ja) not (nein)
+    if(Punkte Croupier >21) then (ja)
+        :Croupier bust=true;
+    endif
+    end group
+    :Gewinne ausschütten;
+    :update Statistik;
+end
+@enduml

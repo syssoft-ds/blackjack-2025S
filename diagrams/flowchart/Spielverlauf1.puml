@@ -1,0 +1,29 @@
+@startuml Spielverlauf1
+start
+    '/:starte Croupier;
+    repeat
+        :Nachricht erhalten;
+        if(Nachrichteninhalt) then (Registrierung)
+            '/group registration
+            if(Spieler) then (ja)
+                if(freie Plätze) then (nein)
+                    :Tisch voll;
+                else (ja)
+                    :registriert;
+                    :Spielerslots--;
+                endif
+            elseif(Kartenzähler) then (ja)
+                if(vorhanden) then (ja)
+                    :Kartenzähler vorhanden;
+                else(nein)
+                    :Kartenzähler registriert->Croupier;
+                    :Croupier registriert->Kartenzähler;
+                    :Kartenzähler=true;
+                endif
+            endif
+            '/end group
+        else (Spielstart)
+        endif
+    repeat while (Spielstart && Spieler!=empty && Kartenzähler!=null ) is (nein) not (ja)
+stop
+@enduml

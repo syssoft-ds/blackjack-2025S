@@ -1,0 +1,26 @@
+@startuml Hit_And_Stand
+actor Spieler
+participant Croupier
+participant Kartenzähler
+
+loop Punkte <= 21 && Spieler sendet kein Stand
+    opt Empfehlung abfragen
+    Spieler -> Kartenzähler : Empfehlung anfragen
+        alt Empfehlung=Stand
+            Kartenzähler -> Spieler: Stand
+        else Empfehlung=Hit
+            Kartenzähler -> Spieler : Empfehlung: Hit
+        end
+    end
+    alt Spieler sendet stand
+    Spieler -> Croupier: Stand
+    else
+        Spieler -> Croupier : Hit
+        Croupier -> Spieler : Karte
+        Croupier -> Kartenzähler: Statistik aktualisieren
+    end
+end
+alt Punkte > 21
+    Croupier -> Spieler: Bust
+end
+@enduml

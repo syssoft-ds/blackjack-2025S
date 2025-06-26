@@ -1,0 +1,16 @@
+@startuml DoubleDown
+actor Spieler
+participant Croupier
+participant Kartenzähler
+
+opt Empfehlung abfragen
+Spieler -> Kartenzähler : Empfehlung anfragen
+Kartenzähler -> Spieler : Empfehlung: Double Down
+end 
+Spieler -> Croupier : Double Down
+Croupier -> Croupier : Spieler-Einsatz verdoppeln
+Croupier -> Spieler : Karte
+Croupier -> Kartenzähler : Statistik aktualisieren
+Spieler -> Croupier : Stand (automatisch)
+
+@enduml

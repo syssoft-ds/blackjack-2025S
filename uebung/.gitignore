@@ -1,0 +1,10 @@
+# exclude folders
+
+blatt_5/
+
+# exclude files
+
+*.aux
+*.synctex.gz
+*.log
+*.tex

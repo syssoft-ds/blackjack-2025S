@@ -1,0 +1,12 @@
+@startuml register_spieler
+actor Spieler
+participant Croupier
+
+Spieler-> Croupier: Registrieren
+alt keine Freien Plätze
+    Croupier -> Spieler: NACK
+    Croupier -> Spieler: Tisch ist voll
+else
+    Croupier -> Spieler : ACK
+end
+@enduml
