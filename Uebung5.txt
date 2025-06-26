@@ -1,0 +1,178 @@
+Aufgabe 1:
+
+Ziel von Blackjack: Spieler will möglichst nahe an 21 Punkte heranzukommen, ohne diese zu überschreiten. Karten 2–10 → entsprechen ihrem Wert,
+		    Bube, Dame, König → je 10 Punkte, Ass → 1 oder 11 Punkte (je nachdem, was günstiger ist)
+
+Kartenzählen: Ermitteln, ob der verbleibende Kartenstapel vorteilhaft für den Spieler ist (mehr hohe Karten übrig) oder nicht.
+	      High-Low-System: Karten 2–6 → +1 (gut für den Spieler, wenn weg)
+			 Karten 7–9 → 0 (neutral)
+			 Karten 10–Ass → −1 (schlecht für den Spieler, wenn weg)
+
+Überlegungen Programmaufbau:
+1) Initialisierung:
+
+       	Croupier erstellt Decks und mischt sie.
+
+       	Kartenzähler initialisiert Count.
+
+2) Spielrunde:
+
+    	Spieler setzt optimalen Betrag (mit Hilfe Kartenzähler).
+
+    	Croupier teilt Karten aus.
+
+   	 Kartenzähler zählt die Karten mit.
+
+3) Zug des Spielers:
+
+    	Spieler fragt Kartenzähler nach optimaler Aktion.
+
+   	 Führt diese Aktion aus.
+
+4) Zug des Croupiers:
+
+    	Spielt gemäß Regeln (zieht bis ≥17, beachtet weiche Hände).
+
+5) Auswertung:
+
+    	Croupier berechnet Gewinn/Niederlage.
+
+    	Kapital des Spielers wird angepasst.
+
+6) Statistik-Update:
+
+    	Kartenzähler speichert alles.
+
+    	Croupier kann entscheiden, ob der Spieler zu oft gewinnt.
+
+    	Eventuell wird der Spieler verwarnt oder „aus dem Casino geworfen“.
+
+Aufgabe 2: 
+
+1. Sicherstellen, dass Nachrichten korrekt ankommen
+
+	Quittierungssystem (ACKs):
+
+   	 	   Der Empfänger bestätigt aktiv den Erhalt eines Pakets mit einer „ACK“-Nachricht (Acknowledgement).
+
+   		  Der Sender wartet auf diese Bestätigung. Kommt sie nicht, wird das Paket nach einem Timeout erneut gesendet.
+
+
+ 		 Sequenznummern verwenden: 
+
+    		 Jede Nachricht erhält eine eindeutige Nummer.
+
+    		 So kann der Empfänger erkennen, ob:
+
+        	  ein Paket doppelt gesendet wurde (und es ignorieren)
+
+       	 	 ein Paket fehlt (und ggf. explizit anfordern)
+ 
+
+2. Fehlkommunikation vermeiden
+
+	Klare Nachrichtenformate definieren (Protokoll) z. B. JSON
+	So weiß jeder Beteiligte, wie er die Nachricht parsen und interpretieren muss.
+
+ 		   Validierung der Daten: 
+
+    		 		Jede Nachricht sollte:
+
+       						Typüberprüfungen enthalten
+
+        					Pflichtfelder haben
+
+       						ggf. Prüfsumme / Signatur zur Integritätsprüfung
+
+
+3. Kommunikation zwischen den Programmen sicherstellen
+
+     Gemeinsame Kommunikationsschnittstelle definieren (Kommunikationsprotokoll): 
+
+       			->  Welche Nachrichtentypen gibt es?
+
+       			-> Was bedeutet jede Nachricht?
+
+        		->  Wer ist Empfänger? Wer ist Absender?
+
+        		-> 	In welcher Reihenfolge müssen Nachrichten erfolgen?
+
+     Stabile Architektur mit klaren Rollen
+
+        		-> Spieler sendet Aktionen an Croupier
+
+         		-> Croupier sendet Spielstatus an Spieler & Kartenzähler
+
+        		-> Kartenzähler sendet Empfehlungen an Spieler
+
+     Feste IP-Adressen und Ports
+
+    			Da UDP verbindungslos ist, müssen Sender und Empfänger:
+
+        			die IP-Adresse und Portnummern der Gegenseite kennen
+
+       				ggf. in einer Konfigurationsdatei oder zentralem Registry-Service verwaltet
+
+
+Aufgabe 3: siehe Croupier.java
+
+Aufgabe 4: 
+
+Terminal 1:
+PS C:\Users\Honou\Desktop\blackjack-2025S> java Croupier
+Croupier gestartet auf Port 5000
+Empfangen: decks von /127.0.0.1:7000
+Gesendet: 312 7,7,5,K,6,7,9,10,10,10,3,Q,10,8,5,5,3,3,K,2,A,Q,J,2,8,10,6,3,3,3,6,K,9,K,K,A,4,3,9,7,2,3,Q,9,9,K,2,4,Q,3,J,Q,10,6,2,2,4,6,8,4,K,8,J,Q,10,3,K,J,A,7,9,Q,6,6,2,Q,7,6,8,K,5,J,Q,A,5,8,A,J,6,A,2,K,K,3,K,4,2,4,6,A,5,4,K,3
+,6,6,6,4,Q,5,3,A,5,J,8,5,7,10,7,8,3,5,5,K,10,J,Q,7,3,A,9,J,A,10,2,K,9,J,4,8,A,5,2,K,2,9,Q,A,4,7,10,3,A,A,2,7,J,2,4,8,4,5,4,7,5,K,4,2,2,7,7,3,8,9,4,Q,5,7,2,10,Q,9,2,J,6,9,5,5,6,7,8,Q,10,A,2,8,3,6,7,J,4,9,J,Q,6,6,10,5,8,3,9,5,J,2,5,7,7,9,A,9,4,6,4,5,8,A,10,10,8,4,10,10,7,K,Q,9,4,A,8,10,5,4,10,6,7,K,5,8,8,8,9,A,2,Q,Q,7,A,9,9,A,K,9,4,J,8,10,J,3,7,J,8,J,8,10,Q,Q,3,7,J,9,2,A,J,K,6,J,9,5,A,6,6,10,3,8,3,A,4,10,J,K,6,4,3,Q,Q,J,K,2,9,Q,2,K an /127.0.0.1:7000    
+Empfangen: Einsatz: 100 von /127.0.0.1:6000
+Einsatz erhalten: 100
+Gesendet: Einsatz bestätigt: 100 an /127.0.0.1:6000
+Empfangen: Hit von /127.0.0.1:6000
+
+Terminal 2:
+PS C:\Users\Honou\Desktop\blackjack-2025S> java Kartenzaehler 7000 127.0.0.1 5000 127.0.0.1 6000
+Ab hier funktioniert der Kartenzähler automatisch auf Anfrage.
+
+Terminal 3:
+PS C:\Users\Honou\Desktop\blackjack-2025S> java Spieler      
+
+--- Spieler-Menü ---
+1 - Hit
+2 - Stand
+3 - Double-Down
+4 - Split
+5 - Surrender
+6 - Einsatz setzen
+7 - Kartenzähler: beste Aktion?
+8 - Kapital anzeigen
+Wähle Aktion: 6
+Einsatzbetrag: 100
+? Gesendet: Einsatz: 100
+
+--- Spieler-Menü ---
+1 - Hit
+2 - Stand
+3 - Double-Down
+4 - Split
+5 - Surrender
+6 - Einsatz setzen
+7 - Kartenzähler: beste Aktion?
+8 - Kapital anzeigen
+Wähle Aktion: [Empfangen von 127.0.0.1:5000]: Einsatz bestätigt: 100
+1
+? Gesendet: Hit
+
+--- Spieler-Menü ---
+1 - Hit
+2 - Stand
+3 - Double-Down
+4 - Split
+5 - Surrender
+6 - Einsatz setzen
+7 - Kartenzähler: beste Aktion?
+8 - Kapital anzeigen
+Wähle Aktion: [Empfangen von 127.0.0.1:7000]: 0.0
+7
+? Gesendet: Tipps
+
+=> wir haben in einer 3er Gruppe gearbeitet und es scheint zu funktionieren
