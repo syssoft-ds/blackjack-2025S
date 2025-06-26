@@ -1,0 +1,22 @@
+Aufgabe 1
+
+Der Spieler kann für jede seiner Aktionen, die er durchführen kann, eine eigene Methode erhalten. Er selbst macht nicht viel anderes als Spielzüge zu deklarieren, also entweder dem Croupier oder dem Kartenzähler eine Aktion zu nennen. Entsprechend ist die wichtigste Methode diejenige, die die Nachrichten nach einem bestimmten Protokoll und mittels Eingabeparameter formuliert und sendet. Die Eingabeparameter können dabei die IP-Adresse und Port des Empfängers sowie der Name des Spielzugs sein.
+
+Der Croupier benötigt zu Beginn eine Methode zur Erstellung der Karten und zum Beginnen des Spiels, wenn der Spieler seinen Einsatz gemacht hat. Außerdem muss er die Startkarten verteilen und auf die Aktionen des Spielers reagieren, also Methoden haben, die Geld auszahlen oder Karten verteilen. Er kann die gleichen Spielzüge ausführen wie der Spieler, mit der Ausnahme, dass er den Croupier nicht nach Tipps fragen kann sondern ob der Spieler oft genug gewonnen hat, um ihn rauszuwerfen. Außerdem benötigt er am Ende eines Spiels eine Methode, die die Gewinne berechnet. Eine Methode zum Senden von Nachrichten wie beim Spieler muss es auch geben. Das Rauswerfen des Spielers kann man durch eine Methode realisieren, das der Croupier sein Programm beendet und somit Spieler und Kartenzähler nicht weiterspielen können.
+
+Der Kartenzähler sollte nicht proaktiv mit den anderen beiden Klassen Kommunizieren. Er speichert die Daten, die der Croupier ihm zusendet. Entsprechend müssen die Methoden zur Berechnung des idealen Spielzugs und anderer Informationen nur dann aufgerufen werden, wenn ein Paket mit entsprechender Nachricht vom Croupier oder Spieler empfangen werden. Das Ganze lässt sich recht automatisiert realisieren, indem eingehende Nachrichten je nach Inhalt direkt zum ausführen von den Methoden des Kartenzählers führen.
+
+Aufgabe 2
+
+UDP garantiert nicht, dass ein gesendetes Paket beim Empfänger ankommt. Falls ein Paket nicht ankommt, muss ein neues gesendet werden. Um feststellen zu können, ob ein Paket angekommen ist, kann man von Empfänger eine Empfangsbestätigung schicken lassen. Falls keine Bestätigung kommt, kann man nach einer kurzen Wartezeit das Paket nochmal schicken.
+
+Weiterhin kann es ein Problem sein, dass Pakete nicht in der richtigen Reihenfolge ankommen. Man kann dem mit fortlaufenden Sequenznummern entgegenwirken, die man den Paketen gibt. Dadurch kann man auch Duplikaten vorbeugen, indem der Empfänger die letzten empfangenen Sequenznummern speichert.
+
+Dann ist natürlich das einheitliche Nachrichtenprotokoll wichtig. Es muss klar definiert werden, ob Nachrichten die Form eines simplen Strings oder einer beispielsweise eine JSON-Datei haben. Sonst kann der Empfänger die Nachricht nicht interpretieren und das Programm nicht die gewünschten Aktionen durchführen.
+
+Aufgabe 4
+
+Wir haben uns zu dritt relativ früh abgesprochen, um ein gemeinsames Protokoll festzulegen. Dadurch konnten wir sichergehen, das die Nachrichten richtig interpretiert werden. Ebenso wichtig war das direkte Festlegen der Spielregeln und demnach auch des Ablaufs des Spiels. Um die in Aufgabe 2 beschriebenen Probleme mit UDP zu bewältigen, müssen die entsprechenden Empfänger ein ACK schicken. Wenn ich als Spieler mit meiner Implementierung eine Nachricht sende und keine ACK-Nachricht erhalte, wird die Nachricht bis zu zwei mal wiederholt. Danach gilt das Versenden der nachricht als Fehlgeschlagen und das Spiel kann nicht fortgesetzt werden.
+
+
+
