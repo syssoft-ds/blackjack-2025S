@@ -1,0 +1,135 @@
+Übungsblatt 5 Rechnernetze Nils Böhnke
+
+Aufgabe1
+Allgemein:
+-Man soll mit 2 oder mehr Karten so nahe wie möglich an 21 Punkte kommen ohne diese zu überschreiten
+-Bilderkarten wie (König, Dame, Bube) zählen 10 Punkte, Asse entweder 1 oder 11
+-Dealer oder Croupier spielt nach festen Regeln: zieht Karten bis mindestens 17 erreicht wird
+-Blackjack schlägt jede andere Kombination mit 21 (Ass + 10)
+
+Klasse Croupier:
+-kartendecks: Liste aller Karten (aus 1-8 vollständigen Decks)
+-hand: Liste der Karten in seiner Hand
+-spieler_haende: SpielerId -> Hand des Spielers
+-ausgegebene_karten: Liste aller bisher gezogenen Karten
+-kartenzaehler: Verbindung Referenz zum Kartenzähler
+
+-erstelle_kartendeck(anzahl_decks): Erstellt n Decks mit allen Karten
+-mische_karten(): zufälliges Neuanordnen des Decks
+-karte_geben(): Gibt Karte aus dem Deck und speichert sie
+-spiel_starten(spieler): Teilt sich selbst uns Spieler Karten aus
+-spiel durchfuehren(): Führt Spiel mit Spielern durch
+-wert_berechnen(Hand): Punktwert ermitteln
+-auswertung(spieler_hand): vergleicht Hand mit eigener
+-gewinn_berechnen(einsatz, ergebnis): Berechnet Auszahlung 
+-statistik_abfragen(): Statistik von Kartenzähler abrufen
+
+
+Klasse Spieler:
+-kapital: Aktueller Kontostand
+-einsatz: Aktueller Einsatz für Runde
+-hand: Aktuelle Kartenhand
+-id: SpielerId
+-kartenzaehler: Referenz zum Kartenzähler
+
+-einsatz_berechnen(true_count): Berechnet optimalen Einsatz
+-empfehlung_anfragen(Hand, dealer_karte): Fragt beim Zähler nach optimalem Spielzug
+-spielzug_ausfuehren(Empfehlung): Führt Aktion aus - Hit, Stand etc.
+-karte_erhalten(karte): Fügt Karte zur Hand hinzu
+-spielausgang_verarbeiten(Ergebnis, gewinnbetrag): Kapital anpassen
+-zuruecksetzten(): Einsatz und Hand nach Runde zurücksetzten
+
+
+Klasse Kartenzähler:
+Brainstorming:
+-anzahl_decks: Zahl der gespielten Decks
+-running_count: Aktuelle Count-Summe nach Hi-Lo
+-verwendete_karten: Liste aller gespielten Karten
+-statistik: Werte wie blackjacks, gewinne, count_verlauf, gesamtspiele
+
+-spiel_starten(anzahl_decks): Initialisiert Zähler mit Info vom Croupier
+-karte_gesehen(karte): Wertet gezogene Karte für Count aus
+-true_count_berechnen(): Berechnet true Count aus Running Count/ geschätzte Rest_Decks
+-aktion_empfehlen(Hand, dealer_karte): Gibt optimale Spielentscheidung zurück
+-spielausgang_speichern(ergebnis): Statistik aktualisieren
+-statistik_geben(): Gibt aktuelle Statistik auf Anfrage zurück
+
+Umgesetzt:
+-self.anzahl_decks: Diese Variable speichert die Gesamtanzahl der Kartendecks (z.B. 6 oder 8), mit denen das aktuelle Spiel gespielt wird
+-self.laufender_zaehlwert: Dies ist der "Running Count" des Kartenzählers
+-self.anzahl_karten_gespielt: Diese Variable verfolgt die Gesamtanzahl der Karten
+-self.historie_karten: Eine Liste, die alle Karten speichert, die in der aktuellen Runde ausgeteilt wurden
+-self.statistik_gewinne: Ein Dictionary, das die Anzahl der gewonnenen Runden für jeden Spieler (identifiziert durch seine ID) speichert
+-self.statistik_blackjacks: Dictionary, das die Anzahl der Blackjacks für jeden Spieler speichert
+-self.statistik_runden_gespielt: Dictionary, das die Gesamtzahl der gespielten Runden für jeden Spieler aufzeichnet
+-karten_verarbeiten(self, karten_str_liste): nimmt eine Liste von Karten-Strings entgegen, die vom Croupier übermittelt werden
+-true_count_berechnen(self): Diese Funktion berechnet den "True Count"
+-aktion_empfehlen(self, spieler_hand_werte, croupier_offene_karte_wert, true_count): empfängt die Werte der Spielerhand
+-optimale_einsatzhoehe_empfehlen(self, true_count): Empfehlung für die Höhe des nächsten Einsatzes des Spielers zurück
+-statistik_aktualisieren(self, spieler_id, gewonnen, hatte_blackjack): Statistiken für einen Spieler nach jeder Runde zu aktualisieren
+-gib_statistiken_an_croupier(self, spieler_id=None): bereitet die gesammelten Statistiken auf und gibt sie zurück, entweder für einen spezifischen Spieler oder für alle Spieler
+-reset_runden_statistik(self): Setzt die Zählwerte zurück
+-verarbeite_eingehende_nachricht(self, nachricht, sender_adresse): empfängt und leitet eingehende UDP-Nachrichten weiter
+
+
+Aufgabe2: 
+User Datagram Protocol (UDP) ist verbindungslos
+-Zustellung ist nicht garantiert
+-Reihenfolge ist nicht garantiert
+-Keine automatische Wiederholung bei Verlust
+-Keine Absicherung gegen Duplikate
+
+-Empfänger quittiert Nachricht um Zustellung zu garantieren
+-> System zur Quittierung
+-Einheitliches Json Format zur klaren Definition von Nachrichten
+-Feste IP-Adressen/ Ports
+
+Anhand von den vergangenen Übungen ist festzuhalten, dass die Kommunikation kompatible sein muss, dafür müssen Abstimmungen über die genaue und einheitliche Kommunikation festgelegt werden, um Nachrichten richtig verarbeiten zu können. Dadurch kann fehlerhafte Kommunikation vermieden werden, indem die Spezifikationen ausgearbeitet und ausgehandelt werden.
+
+
+Aufgabe3:
+Ich musste gemäß des ersten Buchstaben vom Nachnamen den Kartenzähler implementieren (siehe Code).
+Um die Situation testen zu können, habe ich versucht den Croupier zu entwickeln, grundsätzlich funktionieren die Programme, jedoch entsteht beim Croupier ein WinError 10054. Nach Recherche kann dies mit der Firewall zusammenhängen.
+
+$ python Croupier.py ***.*.*.* ***** ***.*.*.* ***** ***.*.*.* ***** *
+[Croupier] Deck mit 6 Decks gemischt. Gesamt: 312 Karten.
+[Croupier] Lauscht auf ***.*.*.* *****
+
+==============================
+[Croupier] Spiel startet mit 6 Decks.
+==============================
+[Croupier] -> Gesendet an ***.*.*.* *****: Typ='game_start_info' Payload={'num_decks': 6}...
+
+--- Runde 1 ---
+[Croupier] -> Gesendet an ***.*.*.* *****: Typ='request_bet' Payload={}...
+[Croupier] Fehler beim Empfangen vom Spieler: [WinError 10054] Eine vorhandene Verbindung wurde vom Remotehost geschlossen
+[Croupier] Spieler hat keinen g▒ltigen Einsatz gesendet oder Timeout.
+[Croupier] Spieler hat keinen g▒ltigen Einsatz gemacht oder Spiel beendet.
+
+
+Hier noch die Ausgabe von dem Kartenzähler:
+
+$ python Kartenzaehler.py ***.*.*.* ***** ***.*.*.* ***** ***.*.*.* *****
+[Kartenz▒hler] Lauscht auf ***.*.*.* *****
+[Kartenz▒hler] <- Empfangen von 127.0.0.1:12001: Typ='game_start_info' Payload={'num_decks': 6}
+[Kartenz▒hler] Z▒hlwerte zur▒ckgesetzt. Statistiken bleiben bestehen.
+[Kartenz▒hler] Spiel initialisiert: 6 Decks.
+Traceback (most recent call last):
+  File "...", line 475, in <module>
+    kartenzaehler_programm.run()
+  File "...", line 449, in run
+    time.sleep(0.01)
+   
+
+
+Aufgabe4:
+Wir haben als Gruppe zusammengearbeitet und die Aufgabe so entwickelt, dass die Rahmenbedingungen stimmen und die Programm bei der Kommunikation keine Probleme aufweisen.
+Dabei war darauf zu achten, dass das Nachrichtensystem einheitlich ist, um eine einheitliche Kommunikation zu garantieren.
+
+Durch die Vorabsprache sind keine größeren Probleme aufgetreten, nur die Firewall mit dem WinError 10054 hat Probleme bereitet.
+
+
+
+
+
+
