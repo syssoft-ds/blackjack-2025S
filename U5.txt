@@ -1,0 +1,21 @@
+Aufgabe 4:
+Leider war es mir aus Zeitgründen nicht möglich, das Programm gemeinsam mit den anderen Gruppen zu testen. Um dennoch
+sicherzustellen, dass meine Komponente grundsätzlich funktioniert, habe ich eigene Tests eingebaut, die typische Nachrichten
+wie receive_card, request_turn und request_bet simulieren. Dadurch konnte ich die JSON-Verarbeitung sowie die internen
+Funktionen des Kartenzählers zumindest lokal überprüfen.
+
+Mögliche Probleme, die bei einem echten Zusammenspiel mit den anderen Gruppen auftreten könnten, sind:
+
+Unterschiedliche Annahmen über das JSON-Format
+Lösungsansatz: Eine zentrale JSON-Spezifikation frühzeitig abstimmen und dokumentieren
+
+Uneinheitliche Groß-/Kleinschreibung bei Kartenrängen
+Lösungsansatz: Eingehende Strings standardisieren oder vorab erlaubte Werte über ein Enum definieren.
+
+Netzwerkprobleme durch falsche IP-/Port-Konfiguration oder blockierte Verbindungen
+Lösungsansatz: Vor dem Test genaue IP-/Port-Absprachen treffen, lokale Firewalls prüfen und Testnachrichten wie hello oder
+ACK zur Verbindungskontrolle verwenden.
+
+Inkonsistente Spiellogik
+Lösungsansatz: Gemeinsame Spielregeln schriftlich festlegen (ggf. mit Beispielen) und Grenzfälle im Team durchsprechen,
+z.B. über eine kurze Testfall-Dokumentation.
