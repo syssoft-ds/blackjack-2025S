@@ -1,0 +1,207 @@
+Rechnernetze Blatt 6
+Peter Kessler
+1593158
+
+
+##################################################################################
+
+Nr. 1)
+
+			Sliding Window:
+
+-Mechanismus, der es dem Sender erlaubt, mehrere Datenpakete hintereinander 
+ zu senden, ohne auf eine Bestätigung (ACK) für jedes einzelne warten zu müssen
+-Liste von Paketen
+-mehrere Sendungen mit jeweils mehreren Paketen
+-pro Sendung maximal so viele Pakete, wie die Fenstergröße zulässt
+-Erhalt von Quittung (ACK) für alle Pakete
+
+	-Versende die ersten n Pakete, die in das Fenster "passen" und
+	 erhalte Quittung
+	-Danach wird das Fenster um dessen Größe in der Liste verschoben
+	-Verschicke wieder neue n Pakete usw.
+
+Bsp:
+Fenstergröße = 3 Pakete
+Liste von 7 Paketen
+"<NS>"= nicht gesendet
+"<W >"= Window/Fenster
+"<Q >" = quittiert
+
+1. Iteration: <NS> <NS> <NS> <NS>|<W > <W > <W >|
+2. Iteration: <NS>|<W > <W > <W >|<Q > <Q > <Q >
+3. Iteration:|<W >|<Q > <Q > <Q > <Q > <Q > <Q >
+4. Iteration: <Q > <Q > <Q > <Q > <Q > <Q > <Q >
+
+
+			TCP Tahoe
+
+-TCP Tahoe nutzt Sliding Window + Staukontrolle, um Überlastungen im Netzwerk 
+ zu erkennen und darauf zu reagieren
+
+- Drei Hauptmechanismen in TCP Tahoe:
+
+    -Slow Start (langsamer Start):
+        -TCP beginnt mit einem kleinen Congestion Window (z. B. cwnd = 1 MSS)
+        -Für jedes empfangene ACK verdoppelt sich cwnd (exponentielles Wachstum)
+        -Ziel: Kapazität der Verbindung schnell „antasten“
+
+    -Congestion Avoidance (Stauvermeidung):
+        -Sobald cwnd einen bestimmten Schwellenwert (ssthresh) erreicht,
+          wird das Wachstum linear statt exponentiell (z. B. +1 MSS pro RTT)
+
+    -Fast Retransmit + Reaktion auf Paketverlust:
+        -Wenn 3 duplizierte ACKs empfangen werden -> sofortige Neuübertragung (Fast Retransmit)
+        -Dann:
+            -ssthresh = cwnd / 2
+            -cwnd wird auf 1 MSS zurückgesetzt
+            -Gehe zurück in Slow Start
+            -> harte Reaktion auf Verlust
+
+
+			TCP Reno
+
+-TCP Reno verbessert TCP Tahoe durch Fast Recovery, wodurch es nach Paketverlust nicht sofort
+ in Slow Start zurückfällt. 
+-Fast Recovery = geht nicht zurück zu slow start, sondern halbiert nur die Fenstergröße
+-Reno nutzt die Bandbreite effizienter, ist aber bei mehreren
+ Paketverlusten gleichzeitig weniger robust
+
+
+			TCP Vegas
+
+-Erweiterung von TCP Reno um frühzeitige Stauerkennung
+-misst aktuelle Round Trip Time (RTT) und vergleicht diese mit der erwarteten RTT
+-wenn gemessene RTT deutlich steigt -> Stau vermutet
+-passt Fenstergröße an, jenachdem, wie viel Stau vermutet wird
+
+##################################################################################
+
+Nr. 2)
+
+Meine IP lokal: 192.168.0.122
+Meine IP öfentlich: 91.67.71.57
+
+a) Befehl (in Konsole): nmap -sn 192.168.0.0/24
+   Ergebnis: "Nmap done: 256 IP addresses (9 hosts up) scanned in 42.73 seconds"
+	      ->9 hosts
+
+b) Befehl (in Konsole): nmap -O scanme.nmap.org
+   Ergebnis: "Aggressive OS guesses: Linux 5.0 - 5.14 (97%), MikroTik RouterOS 7.2 - 7.5 (Linux 5.6.3) (95%), Linux 4.15 - 5.19 (94%), Linux 2.6.32 - 3.13 (94%), OpenWrt 21.02 (Linux 5.4) (94%), Linux 5.1 - 5.15 (93%), Linux 6.0 (93%), OpenWrt 22.03 (Linux 5.10) (92%), Linux 2.6.22 - 2.6.36 (92%), Linux 3.10 - 4.11 (92%)
+	      No exact OS matches for host (test conditions non-ideal).
+	      Network Distance: 24 hops"
+	     -> Linux 5.0-5.14
+
+c) Befehl (in Konsole): whois nmap.org
+   Ergebnis: "Creation Date: 1999-01-18T05:00:00.0Z"
+
+d) Befehl (in Konsole): nmap -sS -p 1-1000 -T4 -v 192.168.0.0/24
+   "-sS": SYN-Scan (schnell & unauffällig)
+   "-p 1-1000": scannt Ports 1 bis 1000 (kannst du anpassen)
+   "-T4": Timing aggressiv – schneller, aber nicht übertrieben
+   "-v": verbose – ausführlichere Ausgabe
+   "192.168.0.0/24": Zielnetz
+
+
+e) Befehl (in Konsole): nmap -sS <ziel>
+   -SYN-Scan = Half-Open Scan
+   -> Sendet nur SYN → bekommt SYN/ACK zurück → schließt Verbindung nicht ab (kein ACK zurück)
+   -Verwendet für:
+	-schnelles Scannen
+	-unauffälliges Scannen, da Verbindung nicht vollständig aufgebaut wird
+
+f) Befehl (in Konsole): nmap -sS -T4 192.168.0.0/24
+   53/tcp
+   80/tcp
+   8009/tcp
+   8080/tcp
+   9090/tcp
+   135/tcp
+   139/tcp
+   445/tcp
+
+   Das waren die offenen Ports, die durch den Befehl gefunden wurden
+
+
+##################################################################################
+
+Nr. 3)
+
+!Capture und Screenshots sind entsprechend benannt und mit im Pull Request enthalten.
+
+-Verwendeter Capture Filter: "udp port 67 or udp port 68"
+
+-In der Konsole habe ich "ipconfig /release" und "ipconfig /renew" eingegeben,
+ um meine IP-Adresse freizugeben und neu anzufordern. Das löst den DHCP-Prozess
+ aus.
+
+-Wireshark hat insgesamt 7 DHCP Pakete gecaptured, welche aus insg. 5 Typen bestehen:
+	-DHCP Release
+	-DHCP Discover
+	-DHCP Offer
+	-DHCP Request
+	-DHCP ACK 
+
+Was man über die einzelnen Protokolle sagen kann:
+
+Release:
+    -Message Type: DHCP Release
+    -Client IP Address: 192.168.0.122
+    -DHCP Server Identifier: 192.168.0.1
+    -Client Identifier: vorhanden
+    -Transaction ID: anders als bei Discover/ACK → neue Kommunikation
+
+     ->Der Client teilt dem DHCP-Server mit, dass er die IP-Adresse 192.168.0.122 nicht 
+       mehr benötigt und sie freigibt
+
+Discover:
+    -Message Type: DHCP Discover → Der Client sucht einen DHCP-Server.
+    -Client MAC: c0:b8:83:93:49:5a
+    -Requested IP Address: 192.168.0.122 (optional – Client wünscht sich diese Adresse)
+    -Transaction ID: Eindeutige ID zur Zuordnung von Antwortpaketen
+    -Bootp Flags: 0x0000 (Unicast – Antwort soll gezielt zurückgehen)
+
+     ->Der Client sendet eine DHCP Discover-Nachricht, um eine IP-Adresse zu erhalten. 
+       Er schlägt 192.168.0.122 vor, hat aber noch keine gültige IP (0.0.0.0).
+
+Offer:
+    -Message Type: DHCP Offer -> Server bietet IP-Adresse an
+    -Your IP Address: 192.168.0.122 → Diese IP wird dem Client vorgeschlagen
+    -DHCP Server Identifier: 192.168.0.1 → IP-Adresse des DHCP-Servers
+    -Lease Time: (nicht numerisch angegeben, aber Option 51 enthalten)
+    -Subnet Mask, Router, DNS: DHCP-Optionen 1, 3, 6
+    -Client MAC: c0:b8:83:93:49:5a
+
+     ->Der DHCP-Server schlägt dem Client die IP-Adresse 192.168.0.122 zur Nutzung vor 
+       und liefert grundlegende Netzwerkinformationen wie Subnetzmaske, Gateway und 
+       DNS-Server mit.
+
+Request:
+    -Message Type: DHCP Request → Client fordert angebotene IP an
+    -Requested IP Address: 192.168.0.122 → IP, die vom Client gewünscht wird (aus Offer)
+    -DHCP Server Identifier: 192.168.0.1 → Server, von dem der Client die Adresse annehmen möchte
+    -Client Identifier: MAC-Adresse des Clients (Option 61)
+    -Parameter Request List: Client fordert spezifische Optionen an (z. B. Subnet, Router, DNS etc.)
+    -Client MAC: c0:b8:83:93:49:5a
+
+     ->Der Client akzeptiert das Angebot des Servers und beantragt die Zuweisung der 192.168.0.122, wobei 
+       er gleichzeitig Netzwerkparameter (wie Router und DNS) vom Server anfordert.
+
+ACK:
+    -Message Type: DHCP ACK → Server bestätigt Zuweisung
+    -Your IP Address: 192.168.0.122 → Diese IP wird dem Client zugewiesen
+    -DHCP Server Identifier: 192.168.0.1 → IP-Adresse des Servers
+    -Lease Time: (nicht numerisch angegeben, aber enthalten)
+    -Subnet Mask, Router, DNS: DHCP-Optionen 1, 3, 6
+    -Client MAC: wieder c0:b8:83:93:49:5a
+
+     ->Der Server akzeptiert die Anfrage und weist dem Client die IP-Adresse 192.168.0.122 zu. 
+       Zusätzlich erhält der Client Netzwerkinformationen wie Router und DNS.
+
+##################################################################################
+
+Nr. 4)
+!Siehe zugefügte PDF "U6_Nr4.pdf"
+
+
+
