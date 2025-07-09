@@ -1,0 +1,150 @@
+Übungsblatt 6 Rechnernetze Nils Böhnke
+
+Aufgabe1
+1. Sliding-Window
+-Wird zur Fehler- und Flusskontrolle eingesetzt
+-Ermöglicht einem Sender mehrere Datenpakete (Segmente) zu versenden ohne auf eine Bestätigung (ACK) von jedem einzelnen Pakets zu warten
+-Wie ein Fenster was sich über einen Strom von Daten bewegt
+->Sendefenster: Bereich von Sequenznummer die der Sender senden darf, umfasst Pakete welche bereits gesendet aber noch nicht bestätigt wurde, und Pakete welche gesendet werden können
+->Fenstergröße: Größe definiert maximale Anzahl von Paketen die Sender unbestätigt gleichzeitig senden darf
+->Empfangsfenster: Bereich von Sequenznummer die Empfänger akzeptiert und erwartet
+-Wenn Sender Paket sendet, rückt Sendefenster vor
+-Wenn Empfänger Paket empfängt und bestätigt rückt Empfangsfenster auf seiner Seite vor
+-Empfang der Bestätigung (ACK) rückt Sendefenster weiter
+-Geht Paket verloren Timeout, Sender sendet Paket erneut
+Wofür:
+-Für Effizienz von Netzwerkprotokollen
+-Ohne müsste Sender nach jedem Paket auf Bestätigung warten -> hohe Latenz, ineffiziente Auslastung der Bandbreite
+-> Flusskontrolle und Fehlerkontrolle
+
+2.TCP Tahoe
+-TCP-Kongestionskontrollalgorithmus: vermeidet Überlastung im Netzwerk zu vermeiden 
+-Effizienten Datentransport zu gewährleisten
+-Langsamer Start: nach dem Verbindungsaufbau oder Timeout beginnt Überlastungsfenster sehr klein; für jedes empfangene ACK wird Überlastungsfenster um 1 MSS erhöht; Ziel Bandbreite zu finden
+-Überlastungsvermeidung: wenn Schwelle erreicht Wechsel Langsamer Start -> Überlastungsvermeidung; Überlastungsfenster wächst bei jeder Runde von gesendeten Paketen
+-Schnelle Neuübertragung: wenn Sender drei doppelte ACK für selbes Segment empfängt nimmt Sender an, das Segment verloren gegangen ist und sofort überträgt ohne auf Timeout zu warten
+Wofür:
+-Sorgt für eine effiziente Nutzung verfügbarer Bandbreite, aber auch auf Überlastung zu reagieren
+-Konservative Reaktion auf Paketverlust durch Rückkehr zu Langsamer Start um Netzwerk nicht zu überlasten
+
+3.TCP Reno:
+-Weiterentwicklung von TCP Tahoe -> Leistung bei Paketverlusten zu verbessern
+-Schnelle Wiederherstellung: Wird ausgelöst, wenn drei doppelte ACKs empfangen werden
+wofür:
+-Verbessert Leistung von TCP
+
+4.TCP Vegas:
+-Ist ein präventiver Algorithmus 
+-Versucht Überlastung zu vermeiden in dem es Netzwerkauslastung mit Messung analysiert
+-Beobachtet Round Trip Time (RTT), wenn diese steigt versucht der Algorithmus das zu erkennen und gegenzusteuern, sodass die Warteschlange von Paketen nicht geflutet wird
+-Misst minimale RTT und aktuelle RTT und berechnet Unterschied
+-Fensteranpassung basiert auf der Differenz
+-Weniger Paketverluste und höherer Durchsatz 
+Wofür:
+-Der RTT Algorithmus zur Überlastungssteuerung um Paketverluste zu vermeiden
+
+
+Liste:
+-Schicht 7: Anwendungsschicht (Application Layer)
+->HTTP (Hypertext Transfer Protocol) HTTP wird von Webbrowsern und Webservern verwendet, um Hypertext-Dokumente und andere Webinhalte auszutauschen
+->FTP (File Transfer Protocol) FTP wird zum Übertragen von Dateien zwischen Clients und Servern verwendet
+->SMTP (Simple Mail Transfer Protocol) SMTP ist das Standardprotokoll für den Versand von E-Mails
+->POP3 (Post Office Protocol version 3) IMAP ist ein weiteres Protokoll zum Abrufen von E-Mails
+->DNS (Domain Name System) DNS übersetzt menschenlesbare Domainnamen in numerische IP-Adressen
+->SSH (Secure Shell) SSH ermöglicht eine sichere Fernverwaltung von Computern und sichere Dateiübertragungen
+->DHCP (Dynamic Host Configuration Protocol) Hosts dynamisch IP-Adressen und andere Netzwerkkonfigurationsparameter zuzuweisen
+-Schicht 6: Darstellungsschicht (Presentation Layer)
+->TLS (Transport Layer Security) / SSL (Secure Sockets Layer) TLS/SSL sorgen für die Verschlüsselung, Authentifizierung und Datenintegrität von Daten, die über eine Netzwerkschicht gesendet werden
+-Schicht 5: Sitzungsschicht (Session Layer)
+->ADSP (AppleTalk Data Stream Protocol) verbindungsorientiertes Protokoll im AppleTalk-Stack, das Ende-zu-Ende-Byte-Stream-Dienste mit Flusskontrolle bietet
+-Schicht 4: Transportschicht (Transport Layer)
+->TCP (Transmission Control Protocol) TCP bietet eine zuverlässige, verbindungsorientierte und strombasierte Datenübertragung zwischen Anwendungen auf verschiedenen Hosts
+->UDP (User Datagram Protocol) UDP bietet eine unzuverlässige, verbindunglose Datagramm-Übertragung
+-Schicht 3: Vermittlungsschicht (Network Layer)
+->IP (Internet Protocol) verantwortlich für die logische Adressierung (IP-Adressen) und das Routing von Paketen
+->ICMP (Internet Control Message Protocol) von Routern und Hosts verwendet, um Fehlerberichte und Kontrollnachrichten über das Netzwerk zu senden
+->IGMP (Internet Group Management Protocol) Mitgliedschaft von Hosts in Multicast-Gruppen zu verwalten
+-Schicht 2: Sicherungsschicht (Data Link Layer)
+->ARP (Address Resolution Protocol) ogische IP-Adresse in eine physikalische MAC-Adresse auf derselben lokalen Netzwerksegment zu übersetzen
+-> Ethernet definiert sowohl das Format der Datenframes als auch die physikalischen Eigenschaften für die Übertragung von Daten
+-Schicht 1: Bitübertragungsschicht (Physical Layer)
+->WLAN (Wireless Local Area Network) drahtlose Kommunikation
+
+Aufgabe2: 
+a) nmap -sn 192.168.1.0/24
+NMAP führt einen Ping-Scan durch das Ergebnis sind, wie viele Hosts online sind, diese werden anpingt, bei mir sind es 0 Hosts. Nmap done: 256 IP addresses (0 hosts up) scanned in 247.91 seconds
+
+b) nmap -O scanme.nmap.org
+Das Betriebssystem ist Linux 4.X|5.X.
+
+c) whois nmap.org
+18. Januar 1999
+
+d) nmap -sS -T4 -p 1-1000 192.168.1.0/24
+-sS: SYN-Scan (schnell & unauffällig), T4: Timing-Modus („Aggressiv“, aber stabil),-p 1-1000: Scan der ersten 1000 TCP-Ports, 192.168.1.0/24: Zielnetz
+
+e) Nmap sendet ein Syn-Paket, die Reaktion: SYN-ACK-> Port offen, RST->Port geschlossen
+Nmap sendet kein ACK zurück, bricht die Verbindung ab -> Half open
+Ist weniger auffällig und Schneller, Ideal für Port-Erkennung 
+
+f) Durch den überwiegenden Scan von Internetseiten ist Port 80 und 443 angegeben.
+
+
+Aufgabe3:
+
+DHCP wird benutzt, um einem Gerät eine IP-Adresse zuzuweisen, um diese zu erzeugen kann man beispielsweise die Netzwerkverbindung zurücksetzten, da um ein DHCP-Paket zu empfangen oder senden ein Client eine DHCP-Anfrage zu stellen.
+
+
+Nachdem ich mit ipconfig /release und ipconfig /renew einen neuen Handshake erzwungen habe, wurden mir vier Anfragen aufgezeigt.
+
+
+Hier ein paar Beobachtungen:
+Die Source address ist 0.0.0.0 und die Anfrage wird an Destination address 255.255.255.255 gesendet.
+
+Pakete über UDP gesendet Client Port ist 67 und Server-Port 68, Identifikation über Mac-Adresse.
+
+UDP- und IPV4-Header.
+
+Option: (12) Host Name enthält den Namen des Hosts.
+
+Die anderen Frames spiegeln im Prinzip das gleiche, aus diesem Grund wird nicht jeder beschrieben.
+
+
+Aufgabe4:
+
+Betrachtet man die Initialisierung, so lässt sich feststellen, dass für jeden Knoten eine Tabelle angelegt wird. In den Zeilen kann man zu einem Knoten ablesen, in den Spalten via, also über einen Knoten. Im Graphen und in der Tabelle sind die Kosten, also Kantengweichte zu den jeweils benachbarten Routern eingetragen.
+
+Schaut man sich nun Router A in der Initialisierung an, ist ein benachbarter Knoten B mit Kantengweicht von A zu B mit 3 und der andere benachbarte Knoten von A zu C mit Kantengewicht mit 23.
+
+Bei der Aktualisierung werden nun Pfade erweitert. Man kann nu andere Wege zu den bekannten Knoten untersuchen und die Kosten mittels der Addition berechnen. So kann man von A nach C über B beispielsweise gelangen und die Kosten belaufen sich auf 5. Des Weiteren wird über C D erschlossen. 
+
+Dies wird solange wiederholt, bis alle vorgesehenen Kästchen ausgefüllt und die niedrigsten Werte bestimmt sind.
+
+Bei den anderen Routern passiert das Gleiche.
+
+
+Algorithmus:
+
+1) Erstelle für jeden Knoten im Graphen eine Tabelle
+-> Erstelle für jeden anderen Knoten der nicht der Hauptknoten der Tabelle ist eine Spalte für via Knoten
+-> Erstelle für jeden anderen Knoten in der jeweiligen Knotentabelle eine Zeile
+
+2) Eintragen von allen direkten Distanzen
+
+3) Tabelle erweitern bis alle Plätze voll sind, Kantengewichte addieren
+
+4) Den Prozess beenden, wenn alle Plätze voll sind, alle optimalen Distanzen sind berechnet 
+
+
+a) & b) in PDF
+
+c) D sendet keine Updates mehr, keine Antwort
+   Nach einer gewissen Zeit wird D als nicht mehr erreichbar markiert, Timeout
+   Router aktualisieren ihre Tabellen und senden neue Updates, andere Router erfahren                           davon, Route wird entfernt
+   Router können betroffene Routen als unendlich markieren 
+
+   
+
+
+
+
