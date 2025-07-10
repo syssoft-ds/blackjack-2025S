@@ -1,185 +1,467 @@
-# Hausaufgabe 5
+# Hausaufgabe 6
 
-## Usage
+## Aufgabe 1
 
-Es ist wichtig, dass das Projekt mit Gradle gebaut wird, da ich Logging verwendet habe und der Ordner für die log-Dateien im Build Prozess erstellt wird.
-Sollte es zu Runtime-Exceptions kommen, liegt dies höchst wahrscheinlich am fehlenden `logs` Ordner im Root Verzeichnis des Projektes.
-Es kann versucht werden den Ordner manuell zu erstellen.
-Hilft dies nicht kann, der Aufruf der `log` Funktion in der Klasse `UDP_Endpoint` auskommentiert werden.
+### Sliding Window, TCP Tahoe, TCP Reno, TCP Vegas
 
-### Dealer
+Das TCP-Protokoll spezifiziert ein Anzahl an Bytes, die ohne eine Empfangsbestätigung übertragen werden können.
+Diese Anzahl ist flexibel und wird deswegen auch Sliding Window genannt.
+Diese Technik hilft dabei die speicherfähigkeit des Mediums besser auszunutzen.
+Tahoe, Reno und Vegas sind Algorithmen, die die Größe des Sliding-Window bestimmen.
+Sie nutzen dabei unterschiedliche Heuristiken.
+TCP Tahoe vergrößert das Sliding-Window, bis es drei duppizierte Acks erhält.
+Dann setzt es die Größe 1 und beginnt das Febster linear zu vergrößern.
+Dies ist in der folgenden Grafik zu erkennen
 
-```bash
-./gradlew run --console=plain --args="--role=dealer"
-```
+![TCP-Tahoe](img/TCP_Tahoe.png)
 
-Der Dealer kann das Spiel starten und pausieren mit den Befehlen
+### Liste von Protokollen und das entsprechende ISO/OSI Layer
 
-```bash
-start
-```
-
-```bash
-pause
-```
-
-### Player
-
-```bash
-./gradlew run --console=plain --args="--role=player --strategy=flat"
-```
-
-Bevor mit der Simulation von Blackjack begonnen werden kann, muss sich der Spieler bei Dealer und Counter registrieren.
-Dies kann er mit dem Befehl
-
-```bash
-register <ip> <port>
-```
-
-### Counter
-
-```bash
-./gradlew run --console=plain --args="--role=counter"
-```
-
-Der Counter muss sich beim Dealer registrieren ebenfalls mit dem Befehl
-
-```bash
-register <ip> <port>
-```
-
-Der Counter kann die Statistik der bisherigen Spiele in eine CSV Datei exportieren mit dem Befehl
-
-```bash
-save
-```
+| Protokoll  | ISO/OSI Schicht   |
+|------------|-------------------|
+| IEEE 802.3 | Data-Link-Layer   |
+| ARP/RARP   | Data-Link-Layer   |
+| IP         | Network-Layer     |
+| ICMP       | Network-Layer     |
+| UDP        | Transport-Layer   |
+| TCP        | Transport-Layer   |
+| QUIC       | Application-Layer |
+| DHCP       | Application-Layer |
+| DNS        | Application-Layer |
 
 ## Aufgabe 2
 
-### Quittierungsbetrieb
+### a)
 
-Allgemein können wir nicht sicherstellen, dass die Nachrichten wie gewünscht ankommen.
-Wir können aber sicherstellen, dass wir Fehler in der Kommunikation bemerken.
-Hierfür implementieren wir einen Quittierungsbetrieb, der den Erhalt der Nachrichten bestätigt.
-Sobald eine Nachricht erhalten wird, schicken wir eine Empfangsbestätigung an den Versender der Nachricht.
-Der Versender versucht, solange seine Nachricht zu verschicken, wie er keine Empfangsbestätigung erhält.
-Dabei wartet er für jede Nachricht eine bestimmte Zeit und bricht ab, sobald die maximale Anzahl der Versuche überschritten ist.
-Hier wirft das Programm eine Exception, die entsprechend dem aktuellen Zustand behandelt werden kann.
+Wie viele Hosts sich in meinem Klasse-C Netz befinden, kann mit dem Befehl
 
-Um zu verhindern, dass Nachrichten mehrfach verarbeitet werden wird jede Nachricht nummeriert.
-Wir kombinieren diese Nummerierung mit einer eindeutigen Identifizierung von Instanzen der Programme.
-Hierfür kombinieren wir die 6 Byte große MAC-Adresse mit der 2 Byte großen Portnummer.
-Diese Identifizierung schicken wir mit jeder Nachricht in einem Header mit.
-Die Kombination aus Instanzen ID und Nachrichten Nummer identifiziert eindeutig jede Nachricht, die über das Netzwerk versendet wird.
-Diese Kombination nennen wir Nachrichten ID.
-Wir speichern die Nachrichten IDs der letzten $n$ erhaltenen Nachrichten.
-Bei Erhalt einer Nachricht prüfen wir, ob wir die Nachricht bereits erhalten haben.
-Die Nachricht wird nur weiterverarbeitet, wenn sie nicht bereits verarbeitet wurde.
+```bash
+sudo nmap -sP 192.168.0.0/24 | grep "scan report" | wc -l
+```
 
-### Header
+in Erfahrung gebracht werden. Mobile Endgeräte werden aber über Ping Scans nur bedingt gut erfasst und so kann es zu unterschiedlichen Ergebnissen kommen.
 
-Der Header einer Nachricht kann wie folgt implementiert werden
+### b)
 
-<table>
-<tr>
-    <th>bytes</th>
-    <th style="text-align:center;">1</th>
-    <th style="text-align:center;">2</th>
-    <th style="text-align:center;">3</th>
-    <th style="text-align:center;">4</th>
-    <th style="text-align:center;">5</th>
-    <th style="text-align:center;">6</th>
-    <th style="text-align:center;">7</th>
-    <th style="text-align:center;">8</th>
-</tr>
-<tr>
-    <th>1-8</th>
-    <td colspan='4' style="text-align:center;">length</td>
-    <td colspan='4' style="text-align:center;">number</td>
-</tr>
-    <th>9-16</th>
-    <td colspan='8' style="text-align:center;">instance id</td>
-</tr>
-<tr>
-    <th>17-24</th>
-    <td style="text-align:center;">t </td>
-    <td style="text-align:center;">r</td>
-    <td style="text-align:center;">0</td>
-    <td style="text-align:center;">0</td>
-    <td style="text-align:center;">0</td>
-    <td style="text-align:center;">0</td>
-    <td style="text-align:center;">0</td>
-    <td style="text-align:center;">0</td>
-</tr>
-<tr>
-    <th>25-4096</th>
-    <td colspan='8' style="text-align:center;">Payload</td>
-</tr>
-</table>
+Das Betriebssystem kann mit dem Nmap Befehl
 
-- t = message type, t $\in \{1,2,3,4,5,6,7,8,9,10,11,12\}$
-- r = sender role, r $\in \{1,2,3\}$
+```bash
+sudo nmap -O scanme.nmap.org
+```
 
-| message type | Funktion       |
-|--------------|----------------|
-| 1            | ACK            |
-| 2            | SYN            |
-| 3            | FIN            |
-| 4            | BET            |
-| 5            | ACTION_REQUEST |
-| 6            | ACTION         |
-| 7            | WINNIGS        |
-| 8            | DECKCOUNT      |
-| 9            | SHUFFLED       |
-| 10           | CARDS          |
-| 11           | UPCARD         |
-| 12           | STATISTICS     |
+In Erfahrung gebracht werden.
 
-| sender role | Funktion |
-|-------------|----------|
-| 1           | Dealer   |
-| 2           | Player   |
-| 3           | Counter  |
+### c)
 
-### Payload
+Wir können mit dem Befehl
 
-Der Payload kann verschiedene Formate je nach Nachrichtentyp annehmen.
-Karten werden in einem Byte kodiert.
-Hierbei werden die Zahlen von 1 bis 52 verwendet.
+```bash
+whois nmap.org
+```
 
-| Bytes | ♧ | ♢ | ♡ | ♤ |
-|-------|-----|----|----|----|
-| 1-4   | A     | A        | A      | A      |
-| 5-8   | 2     | 2        | 2      | 2      |
-| 9-12  | 3     | 3        | 3      | 3      |
-| 13-16 | 4     | 5        | 4      | 4      |
-| 17-20 | 5     | 5        | 5      | 5      |
-| 21-24 | 6     | 6        | 6      | 6      |
-| 25-28 | 7     | 7        | 7      | 7      |
-| 29-32 | 8     | 8        | 8      | 8      |
-| 33-36 | 9     | 9        | 9      | 9      |
-| 37-40 | 10    | 10       | 10     | 10     |
-| 41-44 | J     | J        | J      | J      |
-| 45-48 | Q     | Q        | Q      | Q      |
-| 49-52 | k     | K        | K      | K      |
+herausfinden, wann die Website registriert wurde. (18.01.1999)
 
-Ganzzahlen werden in 4 Bytes kodiert. Spielaktionen werden in einem Byte kodiert, genauso wie Booleans.
+### d)
 
-| Byte | Aktion      |
-|------|-------------|
-| 1    | Hit         |
-| 2    | Stand       |
-| 3    | Double Down |
-| 4    | Split       |
-| 5    | Surrender   |
+Um eine große Anzahl Adressen nach offenen TCP-Ports zu scannen, können wir einen sogenannten SYN-Scan verwenden.
+Diesen führt nmap standardmäßig aus, wenn es mit Root Rechten gestartet wird.
+Wir können die Option aber auch explizit angeben.
+Den Adressraum können wir durch CIDR-Notation spezifizieren.
 
-Es ist klar, dass man mit dieser Konvention alle Informationen kodieren kann, die ausgetauscht werden müssen.
-Ein Eintrag für die Statistik ist eine Konkatenation von mit diesen Konventionen kodierten Datentypen.
+```bash
+sudo nmap -sS 192.168.0.0/24
+```
 
-### Aufgabe 4
+### e)
 
-Ich habe für die letzte Aufgabe frühzeitig versucht mich mit meinen Kommilitonen abzusprechen, indem ich meinen Arbeitsprozess dokumentiere.
-Aber da bis auf einen Kommilitonen, und dieser für mich zu spät, sich niemand daran beteiligt hat, habe ich entschieden bei dieser Aufgabe alleine zu arbeiten. Dementsprechend hatte ich keine Probleme mit der Abstimmung mit anderen Kommilitonen.
-Aber ich musste mehrfach Änderungen am Nachrichten Protokoll vornehmen, da im Laufe der Entwicklung neue Erkenntnisse einfließen mussten.
-Die größte Herausforderung war die korrekte Implementierung des `GameThread`, da ich etwas aus der Übung war, was das Thema Multithreading angeht.
-Die Logik für die Berechnung des Erwartungswerts wurde aus Zeitgründen KI generiert. Sie sieht für mich aber korrekt aus und gelangt auch zu nachvollziehbaren Entscheidungen, die im Einklang mit Basic-Strategy stehen.
+Der SYN-Scan schickt ein SYN-Paket an einen Port.
+Dieser Antwortet, wenn er offen ist, mit einem SYN/ACK-Paket.
+Ist er geschlossen, wird mit einem RST-Paket geantwortet.
+Erhält man keine Antwort oder erhält man einen ICMP unreachable Fehler wird der Port als gefiltert markiert.
+
+Der SYN-Scan nutzt aus, dass TCP-Verbindungen im halboffenen Zustand verbleiben können, denn Nmap antwortet auf das erhaltenen SYN/ACK nicht mit einem ACK-Paket. Dies ermöglicht das schnelle Scannen von vielen Ports.
+
+### f)
+
+| Port      | Anwendung |
+|-----------|-----------|
+| 22/tcp    | ssh       |
+| 53/tcp    | DNS       |
+| 67-68/udp | DHCP      |
+| 80/tcp    | http      |
+
+## Aufgabe 3
+
+Für das Aufzeichnen der DHCP-Pakete kann man den folgenden Capture-Filter verwenden `port 67 or port 68`.
+Da der DHCP Server Port 67 und der DHCP Client Port 68 nutzt, kann man so DHCP Pakete aufzeichnen.
+Um DHCP Pakete aufzuzeichnen, fordern wir den DHCP Server auf uns eine neue IP-Adresse mitzuteilen.
+Dies können wir mit den Befehlen
+
+```bash
+sudo dhclient -r
+sudo dhclient <network interface>
+```
+
+Dies führt zu folgender Aufzeichnung und zeigt exemplarisch den Ablauf eines DHCP Verbindungsaufbaus.
+
+### Release (optional)
+
+Es wird dem DHCP Server mitgeteilt, dass er die IP-Adresse des Hosts wieder vergeben kann.
+Dies ist eine optionale Operation, da ein Host nicht zwangsläufig seine IP-Adresse freigeben muss.
+Im UDP Header können wir sehen, dass sowohl die IP des Hosts als auch die IP des Servers bekannt ist.
+
+```text
+Frame 1: 342 bytes on wire (2736 bits), 342 bytes captured (2736 bits) on interface enp4s0, id 0
+Ethernet II, Src: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85), Dst: Commscope_18:7f:96 (e4:f7:5b:18:7f:96)
+Internet Protocol Version 4, Src: 192.168.0.21, Dst: 192.168.0.1
+User Datagram Protocol, Src Port: 68, Dst Port: 67
+Dynamic Host Configuration Protocol (Release)
+    Message type: Boot Request (1)
+    Hardware type: Ethernet (0x01)
+    Hardware address length: 6
+    Hops: 0
+    Transaction ID: 0xda524f74
+    Seconds elapsed: 0
+    Bootp flags: 0x0000 (Unicast)
+    Client IP address: 192.168.0.21
+    Your (client) IP address: 0.0.0.0
+    Next server IP address: 0.0.0.0
+    Relay agent IP address: 0.0.0.0
+    Client MAC address: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+    Client hardware address padding: 00000000000000000000
+    Server host name not given
+    Boot file name not given
+    Magic cookie: DHCP
+    Option: (53) DHCP Message Type (Release)
+        Length: 1
+        DHCP: Release (7)
+    Option: (54) DHCP Server Identifier (192.168.0.1)
+        Length: 4
+        DHCP Server Identifier: 192.168.0.1
+    Option: (12) Host Name
+        Length: 10
+        Host Name: paul-simon
+    Option: (255) End
+        Option End: 255
+    Padding: 0000000000000000000000000000000000000000000000000000000000000000000000000000
+```
+
+### Discover
+
+Der DHCP-Client schickt eine `Discover` Nachricht an die Broadcast-Adresse `255.255.255.255`.
+Dies dient dazu, dass ein entsprechender DHCP-Server die Nachricht empfangen kann.
+Dies ist auch der Grund, warum der DHCP-Server auf eine andere Port-Nummer nutzen muss, da sonst alles DHCP-Clients angesprochen werden würden.
+Zu diesem Zeitpunkt ist die IP des DHCP-Clients unbekannt, weswegen die Absender-Adresse `0.0.0.0` zeigt.
+Der Client fügt seine MAC-Adresse an, damit der Server in unter dieser erreichen kann.
+
+```text
+Frame 2: 342 bytes on wire (2736 bits), 342 bytes captured (2736 bits) on interface enp4s0, id 0
+Ethernet II, Src: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85), Dst: Broadcast (ff:ff:ff:ff:ff:ff)
+Internet Protocol Version 4, Src: 0.0.0.0, Dst: 255.255.255.255
+User Datagram Protocol, Src Port: 68, Dst Port: 67
+Dynamic Host Configuration Protocol (Discover)
+    Message type: Boot Request (1)
+    Hardware type: Ethernet (0x01)
+    Hardware address length: 6
+    Hops: 0
+    Transaction ID: 0x45747628
+    Seconds elapsed: 0
+    Bootp flags: 0x0000 (Unicast)
+    Client IP address: 0.0.0.0
+    Your (client) IP address: 0.0.0.0
+    Next server IP address: 0.0.0.0
+    Relay agent IP address: 0.0.0.0
+    Client MAC address: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+    Client hardware address padding: 00000000000000000000
+    Server host name not given
+    Boot file name not given
+    Magic cookie: DHCP
+    Option: (53) DHCP Message Type (Discover)
+        Length: 1
+        DHCP: Discover (1)
+    Option: (50) Requested IP Address (192.168.0.21)
+        Length: 4
+        Requested IP Address: 192.168.0.21
+    Option: (12) Host Name
+        Length: 10
+        Host Name: paul-simon
+    Option: (55) Parameter Request List
+        Length: 13
+        Parameter Request List Item: (1) Subnet Mask
+        Parameter Request List Item: (28) Broadcast Address
+        Parameter Request List Item: (2) Time Offset
+        Parameter Request List Item: (3) Router
+        Parameter Request List Item: (15) Domain Name
+        Parameter Request List Item: (6) Domain Name Server
+        Parameter Request List Item: (119) Domain Search
+        Parameter Request List Item: (12) Host Name
+        Parameter Request List Item: (44) NetBIOS over TCP/IP Name Server
+        Parameter Request List Item: (47) NetBIOS over TCP/IP Scope
+        Parameter Request List Item: (26) Interface MTU
+        Parameter Request List Item: (121) Classless Static Route
+        Parameter Request List Item: (42) Network Time Protocol Servers
+    Option: (255) End
+        Option End: 255
+    Padding: 0000000000000000000000000000000000000000000000
+```
+
+### Offer
+
+Erhält der DHCP-Server eine `Discover` Nachricht erstellt er eine `Offer` Nachricht.
+Hier bietet er dem Client eine gültige IP an.
+Diese ist auch schon als Ziel-Adresse im udp Header zu finden.
+Dass die Nachricht überhaupt ankommt, liegt an der MAC-Adresse die im Ethernet Header spezifiziert ist.
+Es werden dem DHCP-Client auch weitere diverse Informationen mitgeteilt, wie zum Beispiel die IP eines DNS-Servers.
+
+```text
+Frame 4: 342 bytes on wire (2736 bits), 342 bytes captured (2736 bits) on interface enp4s0, id 0
+Ethernet II, Src: Commscope_18:7f:96 (e4:f7:5b:18:7f:96), Dst: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+Internet Protocol Version 4, Src: 192.168.0.1, Dst: 192.168.0.22
+User Datagram Protocol, Src Port: 67, Dst Port: 68
+Dynamic Host Configuration Protocol (Offer)
+    Message type: Boot Reply (2)
+    Hardware type: Ethernet (0x01)
+    Hardware address length: 6
+    Hops: 0
+    Transaction ID: 0x45747628
+    Seconds elapsed: 0
+    Bootp flags: 0x0000 (Unicast)
+    Client IP address: 0.0.0.0
+    Your (client) IP address: 192.168.0.22
+    Next server IP address: 192.168.0.1
+    Relay agent IP address: 0.0.0.0
+    Client MAC address: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+    Client hardware address padding: 00000000000000000000
+    Server host name not given
+    Boot file name not given
+    Magic cookie: DHCP
+    Option: (53) DHCP Message Type (Offer)
+        Length: 1
+        DHCP: Offer (2)
+    Option: (54) DHCP Server Identifier (192.168.0.1)
+        Length: 4
+        DHCP Server Identifier: 192.168.0.1
+    Option: (51) IP Address Lease Time
+        Length: 4
+        IP Address Lease Time: 7 days (604800)
+    Option: (58) Renewal Time Value
+        Length: 4
+        Renewal Time Value: 3 days, 12 hours (302400)
+    Option: (59) Rebinding Time Value
+        Length: 4
+        Rebinding Time Value: 6 days, 3 hours (529200)
+    Option: (1) Subnet Mask (255.255.255.0)
+        Length: 4
+        Subnet Mask: 255.255.255.0
+    Option: (28) Broadcast Address (192.168.0.255)
+        Length: 4
+        Broadcast Address: 192.168.0.255
+    Option: (3) Router
+        Length: 4
+        Router: 192.168.0.1
+    Option: (6) Domain Name Server
+        Length: 4
+        Domain Name Server: 192.168.0.1
+    Option: (42) Network Time Protocol Servers
+        Length: 4
+        Network Time Protocol Server: 192.168.0.1
+    Option: (255) End
+        Option End: 255
+    Padding: 0000
+```
+
+### Request
+
+Der DHCP-Client empfängt die `Offer` Nachricht und bestätigt diese mit einer `Request` Nachricht.
+
+```text
+Frame 5: 342 bytes on wire (2736 bits), 342 bytes captured (2736 bits) on interface enp4s0, id 0
+Ethernet II, Src: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85), Dst: Broadcast (ff:ff:ff:ff:ff:ff)
+Internet Protocol Version 4, Src: 0.0.0.0, Dst: 255.255.255.255
+User Datagram Protocol, Src Port: 68, Dst Port: 67
+Dynamic Host Configuration Protocol (Request)
+    Message type: Boot Request (1)
+    Hardware type: Ethernet (0x01)
+    Hardware address length: 6
+    Hops: 0
+    Transaction ID: 0x45747628
+    Seconds elapsed: 3
+    Bootp flags: 0x0000 (Unicast)
+    Client IP address: 0.0.0.0
+    Your (client) IP address: 0.0.0.0
+    Next server IP address: 0.0.0.0
+    Relay agent IP address: 0.0.0.0
+    Client MAC address: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+    Client hardware address padding: 00000000000000000000
+    Server host name not given
+    Boot file name not given
+    Magic cookie: DHCP
+    Option: (53) DHCP Message Type (Request)
+        Length: 1
+        DHCP: Request (3)
+    Option: (54) DHCP Server Identifier (192.168.0.1)
+        Length: 4
+        DHCP Server Identifier: 192.168.0.1
+    Option: (50) Requested IP Address (192.168.0.22)
+        Length: 4
+        Requested IP Address: 192.168.0.22
+    Option: (12) Host Name
+        Length: 10
+        Host Name: paul-simon
+    Option: (55) Parameter Request List
+        Length: 13
+        Parameter Request List Item: (1) Subnet Mask
+        Parameter Request List Item: (28) Broadcast Address
+        Parameter Request List Item: (2) Time Offset
+        Parameter Request List Item: (3) Router
+        Parameter Request List Item: (15) Domain Name
+        Parameter Request List Item: (6) Domain Name Server
+        Parameter Request List Item: (119) Domain Search
+        Parameter Request List Item: (12) Host Name
+        Parameter Request List Item: (44) NetBIOS over TCP/IP Name Server
+        Parameter Request List Item: (47) NetBIOS over TCP/IP Scope
+        Parameter Request List Item: (26) Interface MTU
+        Parameter Request List Item: (121) Classless Static Route
+        Parameter Request List Item: (42) Network Time Protocol Servers
+    Option: (255) End
+        Option End: 255
+    Padding: 0000000000000000000000000000000000
+```
+
+### Acknowledge
+
+Der DHCP-Server empfängt die `Request` Nachricht und fügt den Client und die zugeteilte IP seiner internen Liste hinzu.
+Er bestätigt den Empfang mit einer `Acknowledge` Nachricht.
+Bei Erhalt diese Nachricht wird der DHCP-Client seine IP entsprechend der getroffenen Vereinbarung festlegen.
+
+```text
+Frame 7: 352 bytes on wire (2816 bits), 352 bytes captured (2816 bits) on interface enp4s0, id 0
+Ethernet II, Src: Commscope_18:7f:96 (e4:f7:5b:18:7f:96), Dst: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+Internet Protocol Version 4, Src: 192.168.0.1, Dst: 192.168.0.22
+User Datagram Protocol, Src Port: 67, Dst Port: 68
+Dynamic Host Configuration Protocol (ACK)
+    Message type: Boot Reply (2)
+    Hardware type: Ethernet (0x01)
+    Hardware address length: 6
+    Hops: 0
+    Transaction ID: 0x45747628
+    Seconds elapsed: 3
+    Bootp flags: 0x0000 (Unicast)
+    Client IP address: 0.0.0.0
+    Your (client) IP address: 192.168.0.22
+    Next server IP address: 192.168.0.1
+    Relay agent IP address: 0.0.0.0
+    Client MAC address: GigaByteTech_f4:ef:85 (b4:2e:99:f4:ef:85)
+    Client hardware address padding: 00000000000000000000
+    Server host name not given
+    Boot file name not given
+    Magic cookie: DHCP
+    Option: (53) DHCP Message Type (ACK)
+        Length: 1
+        DHCP: ACK (5)
+    Option: (54) DHCP Server Identifier (192.168.0.1)
+        Length: 4
+        DHCP Server Identifier: 192.168.0.1
+    Option: (51) IP Address Lease Time
+        Length: 4
+        IP Address Lease Time: 7 days (604800)
+    Option: (58) Renewal Time Value
+        Length: 4
+        Renewal Time Value: 3 days, 12 hours (302400)
+    Option: (59) Rebinding Time Value
+        Length: 4
+        Rebinding Time Value: 6 days, 3 hours (529200)
+    Option: (1) Subnet Mask (255.255.255.0)
+        Length: 4
+        Subnet Mask: 255.255.255.0
+    Option: (28) Broadcast Address (192.168.0.255)
+        Length: 4
+        Broadcast Address: 192.168.0.255
+    Option: (3) Router
+        Length: 4
+        Router: 192.168.0.1
+    Option: (6) Domain Name Server
+        Length: 4
+        Domain Name Server: 192.168.0.1
+    Option: (12) Host Name
+        Length: 10
+        Host Name: paul-simon
+    Option: (42) Network Time Protocol Servers
+        Length: 4
+        Network Time Protocol Server: 192.168.0.1
+    Option: (255) End
+        Option End: 255
+```
+
+## Aufgabe 4
+
+### Analyse
+
+Sei $G = (V, E)$ ein ungerichteter gewichteter zusammenhängender Graph mit
+$$w : E \rightarrow \mathbb{R}^+, w(e) = \text{Gewicht von } e$$
+Der Algorithmus beginnt indem er die Distanzen zu seinen direkten Nachbarn in die Tabelle einträgt.
+Danach teilt jeder Knoten seine Routingtabelle mit den anderen Knoten im Netz.
+Dies führen wir $|V|$ mal aus, und aktualisieren entsprechend die Routingtabelle.
+Kann ein Router feststellen, dass ein neuer kürzerer Pfad existiert, aktualisiert er dies in der Routingtabelle.
+Für jeden Schleifendurchlauf $1 \leq i \leq |V|$ gilt, dass eine Routingtabelle für einen Knoten $v$ die aktuell kürzesten Pfade zu genau den Knoten enthält, welche maximal $i$ hops entfernt sind.
+
+Da die maximale Anzahl an Hops $|V| - 1$ beträgt folgt die Korrektheit des Algortihmus.
+Ein Router erstellet also $|V|$ Routingtabellen und aktualisieren für diese jedes mal eine ${|V| \times |V|}$ Matrix.
+Insgesamt benötigt jeder Router also $O(|V|^3)$ Zeit.
+
+Der Algorithmus hat keine ungewöhnliche Laufzeit für einen naiven kürzeste Wege Algorithmus.
+Jedoch ist ein Vorteil dieses Algorithmus, dass die Netzwerk Toplogie vorher nicht bekannt sein muss.
+Dies bedeutet auch, dass solange jeder Router den Algorithmus implementiert, das Netzwerk in seiner Topologie verändert werden kann.
+Außerdem kann das Routing periodisch verändert werden, indem man den Algorithmus erneut durchläuft.
+Dies ist insbesondere von Vorteil, wenn sich die Kantengewichte, also die gemessenen Werte einer Metrik, dynamisch verändern können (z.B. Round-Trip-Time).
+
+### a)
+
+
+| Von x | Via x | Via y | Via z | | Von y | Via x | Via y | Via z | | Von z | Via x | Via y | Via z |
+|-------|-------|-------|-------|-|-------|-------|-------|-------|-|-------|-------|-------|-------|
+| Zu x  |       |       |       | | Zu x  | 2     |       |       | | Zu x  | 7     |       |       |
+| Zu y  |       | 2     |       | | Zu y  |       |       |       | | Zu y  |       | 1     |       |
+| Zu z  |       |       | 7     | | Zu z  |       |       | 1     | | Zu z  |       |       |       |
+
+| Von x | Via x | Via y | Via z | | Von y | Via x | Via y | Via z | | Von z | Via x | Via y | Via z |
+|-------|-------|-------|-------|-|-------|-------|-------|-------|-|-------|-------|-------|-------|
+| Zu x  |       |       |       | | Zu x  | 2     |       | 8     | | Zu x  | 7     | 3     |       |
+| Zu y  |       | 2     | 8     | | Zu y  |       |       |       | | Zu y  | 9     | 1     |       |
+| Zu z  |       | 3     | 7     | | Zu z  | 9     |       | 1     | | Zu z  |       |       |       |
+
+| Von x | Via x | Via y | Via z | | Von y | Via x | Via y | Via z | | Von z | Via x | Via y | Via z |
+|-------|-------|-------|-------|-|-------|-------|-------|-------|-|-------|-------|-------|-------|
+| Zu x  |       |       |       | | Zu x  | 2     |       | 8     | | Zu x  | 7     | 3     |       |
+| Zu y  |       | 2     | 8     | | Zu y  |       |       |       | | Zu y  | 9     | 1     |       |
+| Zu z  |       | 3     | 7     | | Zu z  | 9     |       | 1     | | Zu z  |       |       |       |
+
+### b)
+
+| Von x | Via x | Via y | Via z | | Von y | Via x | Via y | Via z | | Von z | Via x | Via y | Via z |
+|-------|-------|-------|-------|-|-------|-------|-------|-------|-|-------|-------|-------|-------|
+| Zu x  |       |       |       | | Zu x  | 7     |       |       | | Zu x  | 7     |       |       |
+| Zu y  |       | 7     |       | | Zu y  |       |       |       | | Zu y  |       | 1     |       |
+| Zu z  |       |       | 7     | | Zu z  |       |       | 1     | | Zu z  |       |       |       |
+
+| Von x | Via x | Via y | Via z | | Von y | Via x | Via y | Via z | | Von z | Via x | Via y | Via z |
+|-------|-------|-------|-------|-|-------|-------|-------|-------|-|-------|-------|-------|-------|
+| Zu x  |       |       |       | | Zu x  | 7     |       | 8     | | Zu x  | 7     | 8     |       |
+| Zu y  |       | 7     | 8     | | Zu y  |       |       |       | | Zu y  | 14    | 1     |       |
+| Zu z  |       | 8     | 7     | | Zu z  | 14    |       | 1     | | Zu z  |       |       |       |
+
+| Von x | Via x | Via y | Via z | | Von y | Via x | Via y | Via z | | Von z | Via x | Via y | Via z |
+|-------|-------|-------|-------|-|-------|-------|-------|-------|-|-------|-------|-------|-------|
+| Zu x  |       |       |       | | Zu x  | 7     |       | 8     | | Zu x  | 7     | 8     |       |
+| Zu y  |       | 7     | 8     | | Zu y  |       |       |       | | Zu y  | 14    | 1     |       |
+| Zu z  |       | 8     | 7     | | Zu z  | 14    |       | 1     | | Zu z  |       |       |       |
+
+Der konstengünstigste Pfad von $z$ nach $x$ ändert sich nicht.
+
+### c)
+
+Mit dem oben beschriebene Algorithmus bemerken sie nicht, dass Router D ausfällt.
+Dies könnten sie nur bemerken, wenn sie die Adresse des Routers cachen würden, und ein ausbleibendes Paket bemerkt würde.
+Aber selbst wenn sie es bemerken würden wären sie mit der gegebenen Nezwerktopologie nicht in der Lage den Ausfall zu ersetzen.
+Wären sie dazu in der Lage würde der Algorithmus einen kürzesten Weg finden und die Konnektivität wäre sichergestellt.
+Es macht also keinen Unterschied, ob die anderen Router den Ausfall bemerken oder nicht.
