@@ -1,0 +1,71 @@
+Frame 1: 354 bytes on wire (2832 bits), 354 bytes captured (2832 bits) on interface \Device\NPF_Loopback, id 0
+    Section number: 1
+    Interface id: 0 (\Device\NPF_Loopback)
+    Encapsulation type: NULL/Loopback (15)
+    Arrival Time: Jun 19, 2025 15:30:20.307906000 Mitteleuropäische Sommerzeit
+    UTC Arrival Time: Jun 19, 2025 13:30:20.307906000 UTC
+    Epoch Arrival Time: 1750339820.307906000
+    [Time shift for this packet: 0.000000000 seconds]
+    [Time delta from previous captured frame: 0.000000000 seconds]
+    [Time delta from previous displayed frame: 0.000000000 seconds]
+    [Time since reference or first frame: 0.000000000 seconds]
+    Frame Number: 1
+    Frame Length: 354 bytes (2832 bits)
+    Capture Length: 354 bytes (2832 bits)
+    [Frame is marked: False]
+    [Frame is ignored: False]
+    [Protocols in frame: null:ip:udp:dhcp]
+    [Coloring Rule Name: UDP]
+    [Coloring Rule String: udp]
+Null/Loopback
+    Family: IP (2)
+Internet Protocol Version 4, Src: 0.0.0.0, Dst: 255.255.255.255
+    0100 .... = Version: 4
+    .... 0101 = Header Length: 20 bytes (5)
+    Differentiated Services Field: 0x00 (DSCP: CS0, ECN: Not-ECT)
+    Total Length: 350
+    Identification: 0x316b (12651)
+    000. .... = Flags: 0x0
+    ...0 0000 0000 0000 = Fragment Offset: 0
+    Time to Live: 128
+    Protocol: UDP (17)
+    Header Checksum: 0x0000 [validation disabled]
+    [Header checksum status: Unverified]
+    Source Address: 0.0.0.0
+    Destination Address: 255.255.255.255
+    [Stream index: 0]
+User Datagram Protocol, Src Port: 68, Dst Port: 67
+    Source Port: 68
+    Destination Port: 67
+    Length: 330
+    Checksum: 0x32d0 [unverified]
+    [Checksum Status: Unverified]
+    [Stream index: 0]
+    [Stream Packet Number: 1]
+    [Timestamps]
+    UDP payload (322 bytes)
+Dynamic Host Configuration Protocol (Request)
+    Message type: Boot Request (1)
+    Hardware type: Ethernet (0x01)
+    Hardware address length: 6
+    Hops: 0
+    Transaction ID: 0x990d1fee
+    Seconds elapsed: 0
+    Bootp flags: 0x0000 (Unicast)
+    Client IP address: 0.0.0.0
+    Your (client) IP address: 0.0.0.0
+    Next server IP address: 0.0.0.0
+    Relay agent IP address: 0.0.0.0
+    Client MAC address: **_**:**:** (**:**:**:**:**:**)
+    Client hardware address padding: 00000000000000000000
+    Server host name not given
+    Boot file name not given
+    Magic cookie: DHCP
+    Option: (53) DHCP Message Type (Request)
+    Option: (61) Client identifier
+    Option: (50) Requested IP Address (192.168.2.105)
+    Option: (12) Host Name
+    Option: (81) Client Fully Qualified Domain Name
+    Option: (60) Vendor class identifier
+    Option: (55) Parameter Request List
+    Option: (255) End

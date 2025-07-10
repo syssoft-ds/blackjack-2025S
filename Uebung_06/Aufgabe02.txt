@@ -1,0 +1,52 @@
+Wie viele Hosts befinden sich in ihrem lokalen Klasse-C-Netz?
+
+"nmap -sn 192.168.1.0/24"
+
+So führt NMAP einen Ping-Scan durch und schaut, wie viele Hosts online sind, indem er alle anpingt.
+In meinem Netzwerk befinden sich derzeit 12 Hosts.
+
+
+
+Welches Betriebssystem wird von scanme.nmap.org verwendet?
+
+"nmap -O scanme.nmap.org"
+
+Die Seite verwendet Linux.
+
+
+
+An welchem Datum wurde die Webseite nmap.org registriert? 
+
+"whois nmap.org"
+
+Am 18. Januar 1999
+
+
+
+Wie kann man möglichst effektiv eine größere Menge an Adressen nach offenen TCP-Ports scannen?
+
+Am effektivsten ist hier der SYN-Scan (Half-Open Scan).
+-> "nmap -sS -p- --min-rate 1000 -T4 192.168.1.0/24"
+
+Mit "-sS" wird der SYN-Scan ausgeführt, "-p-" scannt alle Ports. Die Mindestrate an Paketen pro Sekunde ist sehr hoch
+und auch "-T4" beschleunigt den Scan.
+
+
+
+
+Wie funktioniert der SYN-Scan und für was kann man ihn verwenden?
+
+Der SYN-Scan ist schnell, weil er nicht den kompletten Handshake ausführt, sondern nur die ersten beiden Schritte.
+Das heißt, er fragt den Port an, erhält eine Antwort des Ports, sendet selbst aber keine Bestätigung sondern bricht
+die Verbindung ab. (Wenn er keine positive Antwort erhält, muss er auch gar nix senden.)
+
+Der "Vorteil" hierbei ist beispielsweise, dass viele Seiten die Anfrage nicht loggen, weil sie nicht vollständig
+abgeschlossen wurde. So sind diese Anfragen schwerer zu erkennen.
+
+
+
+Welches sind die offenen Ports, die bei Ihren bisherigen Nmap-Scans am häufigsten auftreten, und wofür werden 
+sie verwendet?
+
+Die häufigsten Ports sind die Ports für HTTP/HTTPS, da ich hauptsächlich Internetseiten gescannt habe.
+-> Port 80 und 443

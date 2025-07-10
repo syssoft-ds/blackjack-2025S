@@ -1,0 +1,36 @@
+Bei der Initialisierung wird für jeden Knoten eine Tabelle angelegt.
+Die Tabelle enthält für jeden Knoten des Graphen eine Zeile "zu N" und eine Spalte "via N".
+Gleichzeitig werden die Kantengewichte (= Kosten) zu den unmittelbar erreichbaren Knoten (d.h. in einem Hop)
+in die Tabelle eingetragen.
+
+Zum Beispiel ist B von A aus direkt erreichbar. Die Kante hat den Wert 3.
+Daher wird in der Tabelle von A eingetragen "zu B via B: Gewicht 3". (und umgekehrt auch in Tabelle für B)
+
+In den darauffolgenden Schritten wird jeder der Pfade erweitert.
+Von B aus gelangt man weiter zu C. Jetzt können wir beide Kanten addieren und erhalten die Kosten
+der Strecke von A nach C über B (3 + 2 = 5).
+Der Wert ist geringer als die 23, die wir im ersten Schritt ermittelt haben (von A zu C ohne Zwischenstation).
+Daher markieren wir in einem weiteren Schritt die Zelle von "von A zu C via B" als die kürzeste Route.
+
+Dies wiederholen wir solange, bis alle möglichen Zellen ausgefüllt sind.
+Leer gelassen werden die Zellen zu/via dem Knoten selbst (= Schlingen) und alle "via"-Spalten,
+deren Knoten nicht direkt (d.h. in einem Hop) vom Ursprungsknoten aus erreichbar sind.
+(Beispielsweise bei D, von dem aus nur C in einem Hop erreichbar ist.)
+
+
+
+Algorithmus:
+
+1) Erstelle für jeden Knoten n im Graphen G eine Tabelle
+-> pro Knoten m aus G der nicht n ist, erstelle eine Zeile "zu m"
+-> pro Knoten o aus G der über eine direkte Kante mit n verbunden ist, erstelle eine Spalte "via o"
+
+2) Trage die Distanzen zu allen unmittelbar (= über eine Kante) erreichbaren Knoten ein
+-> pro Spalte ein Eintrag
+
+3) Erweitere die Tabelle, indem du die Pfade solange erweiterst, bis die Tabelle voll ausgefüllt ist
+-> dabei addiere die Kantengewichte
+-> markiere pro Zeile den kleinsten Wert als den kürzesten/kostengünstigsten Pfad
+
+4) Beende, sobald alle Zellen einen Wert enthalten
+-> für jeden Knoten wurde die optimale Distanz zu allen anderen Knoten gefunden

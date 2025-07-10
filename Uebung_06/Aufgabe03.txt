@@ -1,0 +1,24 @@
+Um DHCP-Pakete senden oder empfangen zu können, muss ein Client eine DHCP-Anfrage senden.
+Dies macht er, wenn er sich mit einem Netzwerk verbindet oder eine neue IP-Adresse anfordert.
+
+Die PCAPNG-Datei enthält vier Anfragen, die bei der Verbindung mit einem WLAN-Signal/-Netz gesendet wurden.
+
+
+
+Folgende Beobachtungen wurden in den ersten beiden Dateien gemacht, die beim ersten Verbindungsaufbau aufgezeichnet wurden:
+
+Der Client (Source Address: 0.0.0.0) sendet die Anfragen an die Broadcast-Adresse (Destination Address: 255.255.255.255),
+vermutlich da er zu diesem Zeitpunkt noch keine IP-Adresse hat und den DHCP-Server nicht direkt erreichen kann.
+
+Die Pakete werden über UDP gesendet, wobei der Quellport 68 (Client-Port) und der Zielport 67 (Server-Port) ist.
+Der Client identifiziert sich über seine MAC-Adresse.
+
+Es ist sowohl ein IPv4- und UDP-Header enthalten.
+
+Mit "Option: (50) Requested IP Address (192.168.2.105)" fordert der Client eine konkrete IP-Adresse an.
+
+In "Option: (12) Host Name" ist der Name des Hosts enthalten.
+
+
+
+Identische Beobachtungen wurden bei den anderen beiden Paketen gemacht.

@@ -1,0 +1,49 @@
+Sliding Window
+
+Das Sliding Window ist eine Möglichkeit, um mehrere Pakete gleichzeitig zu schicken.
+Angenommen wir haben eine Liste von Paketen und möchten diese verschicken.
+Pro Sendung können wir maximal so viele Pakete versenden, wie das Fenster groß ist.
+Die Pakete werden gemeinsam versendet und ich erhalte auch für alle Pakete eine Quittung (ACK) vom Empfänger.
+Nachdem ich die Quittung erhalten habe, wird das Fenster in der Liste der Pakete verschoben (um die Größe des Fensters)
+und es können erneut n-viele Pakete geschickt werden (wobei n die Größe des Fensters ist).
+So spart man sich die Quittierung jedes einzelnen Pakets und erhält stattdessen für eine Gruppe von Paketen eine Quittung.
+
+Dies ist zusätzlich in einer Grafik visualisiert.
+
+
+
+TCP Tahoe
+
+TCP Tahoe ist einer von drei Algorithmen zur Staukontrolle bei TCP.
+Ziel ist es, eine Überlastung und damit verbundene Paketverluste, etc. zu vermeiden.
+Dafür ermitteln sie, was die maximale Größe des Fensters ist, wo es noch nicht zu einer Überlastung kommt.
+
+Bei TCP Tahoe wird mit einem kleinen Fenster gestartet, d.h. wenigen Paketen im Fenster.
+Die Zahl wird dann kontinuierlich gesteigert (exponentiell), bis ein Paketverlust erkannt wird.
+Dies wird erkannt, sofern kein ACK nach dem Timeout erhalten wurde. Alternativ auch,
+wenn der Sender drei identische ACKs für das selbe Paket erhält (dann ist ein nachfolgendes Paket verloren gegangen).
+
+Wird ein Paketverlust erkannt, so wird die Zahl jedoch komplett zurückgesetzt auf den Initalwert.
+Dann beginnt der Prozess von vorne.
+Dass immer klein angefangen und exponentiell gesteigert wird, wird als Slow Start bezeichnet.
+
+
+
+TCP Reno
+
+TCP Reno ähnelt TCP Tahoe, die Reaktion bei drei gleichen ACKs ist jedoch anders:
+In dem Fall wird die Fenstergröße nicht komplett zurückgesetzt sondern nur halbiert.
+Dementsprechend ist der Durchsatz höher, als wenn die Fenstergröße komplett zurückgesetzt wird.
+
+
+
+TCP Vegas
+
+Bei TCP Vegas wird, im Gegensatz zu den anderen beiden Ansätzen, versucht, den Stau zu erkennen,
+bevor ein Paketverlust auftritt.
+Dafür überwacht es die Round-Trip-Time, also die Zeit, die ein Paket zum Empfänger und zurück braucht.
+Die RTT wird dann mit der Basis-RTT gemessen, also der niedrigen Zeit zu Beginn, als das Senden problemlos klappte.
+Ist der Unterschied zwischen den Zeiten sehr groß, d.h. die Pakete brauchen aktuell deutlich länger,
+deutet das auf einen Stau hin. Daraus ableitend wird die Fenstergröße leicht reduziert.
+
+So wird die Bandbreite erhöht, weil weniger Pakete doppelt gesendet werden müssen, weil weniger Verluste auftreten.
