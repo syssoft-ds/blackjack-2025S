@@ -1,0 +1,82 @@
+Aufgabe 1
+
+Bei Sliding-Window handelt es sich um ein Protokoll, das die Anzahl der gesendeten Pakete beschränkt. Es können eine bestimmte Menge an Nachrichten an den Empfänger versendet werden, ohne auf eine Antwort des Empfängers zu warten. Wenn diese bestimmte Anzahl erreicht wurde, muss auf eine Ankunftbestätigung gewartet werden. Für jede empfangende Bestätigung kann dann eine weitere Nachricht versendet werden. Die Bestätigungen sollen in der gleichen Reihenfolge erscheinen wie die versendeten Pakete. Auf diese Art soll die Überlastung des Empfängers vermieden werden, ohne aber die Anzahl der gesendeten Pakete zu stark zu reduzieren.
+
+Bei TCP Tahoe handelt es sich um eine Variante des TCP-Protokolls, dass Überlastungen beim versenden von Paketen vorbeugen soll. Diese Überlastungen könnten zum Zusammenbrechen des Netzwerks und somit zu Paketverlusten führen. Es werden drei Mechanismen genutzt, um dies zu verhindern. Der erste Mechanismus beschränkt die Fenstergröße, also die Anzahl der gleichzeitig versendeten Pakete, zu Beginn der Verbindung. Mit jedem erhaltenen ACK verdoppelt sich die Fenstergröße. Beim zweiten Mechanismus wird das Wachstum der Fenstergröße ab einer bestimmten Grenzwert auf lineares Wachstum reduziert. Der dritte Mechanismus greift, sobald drei Duplikate von ACKs empfangen werden. Wenn dies eintritt, besteht die Gefahr einer Überlastung und entsprechend von Paketverlust. Dann wird die Fenstergröße wieder auf den Anfangswert gesetzt und der Grenzwert halbiert, um die Gefahr des Staus die minimieren.
+
+TCP Reno baut auf Tahoe auf. Der Unterschied liegt im dritten Mechanismus. Wenn drei identische ACKs empfangen werden, wird der Grenzwert des exponentiellen Wachstums halbiert. Dann wird die Fenstergröße nicht auf 1, sondern direkt auf den neuen Grenzwert gesetzt, um eine schneller die bereits versendeten Pakete nochmal verschicken zu können. Sobald keine Duplikate mehr versendet werden, erhöht sich die Fenstergröße wieder. Dies hat zur Folge, dass Reno schneller sein kann als Tahoe.
+
+TCP Vegas ist ebenfalls eine Weiterentwicklung. Ziel von TCP-Vegas ist es, früher Staus zu erkennen, um Paketverluste zu vermeiden. Dazu beobachtet Vegas Verzögerungen im Netzwerk. Es werden dazu zwei Werte berechnet. Zum einen die erwartet Übertragungsrate, wenn das Netzwerk leer ist, zum anderen die tatsächliche Übertragungsrate. Wenn die Differenz dieser Zahlen zu groß ist, staut sich etwas im Netzwerk. Als Reaktion auf eine hohe Differenz ist eine leichte Verkleinerung des Fensters. Dadurch wird die Bandbreite besser genutzt, da bei den anderen beiden Varianten das Netz nach einem Paketverlust unterausgelastet ist.
+
+Zeichnung zu Sliding-Window:
+
+Hier ein Beispiel mit Fenstergröße 5:
+
+				 |   Fenster	 |
+Zu sendende Elemente:        [1] |[2][3][4][5][6]| [7][8][9]...
+			      ^	 |    		 |  ^
+			     ACK | (dürfen ver-  |  Darf noch nicht versendet werden
+				 | sendet werden)|
+Liste aller Protokolle:
+
+Protokoll |      Schicht	|	Begründung
+----------|---------------------|---------------------------------------------------------------
+IP	  |3. Schicht/Netzwerk	| IP ist ein verbindungsloses Protokoll, dass Pakete 
+	  |			| netzübergreifend routet und logisch adressiert.
+----------|---------------------|---------------------------------------------------------------
+ICMP	  |3. Schicht/Netzwerk	| Wird in IP-Paketen transportiert und ist für Fehler-
+	  |			| meldungen, Diagnose und Kontrollnachrichten zuständig.
+----------|---------------------|---------------------------------------------------------------
+ARP       |2. Schicht/Sicherung	| Arbeitet mit zwar mit IP-Adressen, möchte aber MAC-Adressen
+	  |			| beschaffen. Diese sind physische Adressen auf der 2. Schicht.
+----------|---------------------|---------------------------------------------------------------
+RARP	  |2. Schicht/Sicherung	| Macht das umgekehrte wie ARP, besorgt IP-Adresse durch MAC-
+	  |			| Adresse.
+----------|---------------------|---------------------------------------------------------------
+UDP	  |4. Schicht/Transport | Ist ein Transportprotokoll, weil es den Datenaustausch in 
+	  |			| Computernetzwerken regelt.
+----------|---------------------|---------------------------------------------------------------
+TCP	  |4. Schicht/Transport	| Ist ein Transportprotokoll, weil es den Datenaustausch in 
+	  |			| Computernetzwerken regelt.
+----------|---------------------|---------------------------------------------------------------
+DNS	  |7. Schicht/Anwendung | DNS ist eine Anwendungsschnittstelle für Programme wie 
+	  |			| Browser oder Mail. Es übersetzt Domains in IPs.
+----------|---------------------|---------------------------------------------------------------
+DHCP	  |7.Schicht/Anwendung	| Versorgt Clients mit IP-Adressen und Netzwerkdaten.
+	  |			| 
+----------|---------------------|---------------------------------------------------------------
+NAT	  |3. Schicht/Netzwerk	| Ist ein Mechanismus, der von Netwerkgeräten, z.B. Rotern,
+	  |			| durchgeführt wird.
+
+
+
+Aufgabe 2
+
+a) In meinem lokalen Klasse-C-Netz befinden sich 256 Hosts. Die Verfügbarkeit fragt man mit dem Befehl sudo nmap -sn 192.168.0.0/24 ab. In Wireshark muss man nach icmp-Protokollen filtern.
+
+b) Ich habe folgenden Befehl benutzt: sudo nmap -O scanme.nmap.org. Mir wurde mitgeteilt, dass das Betriebssystem mit einer Wahrscheinlichkeit von 87% Linux 2.6.32 ist.
+
+c) Die Website nmap.org wurde am 18.01.1999 erstellt. Dies habe ich mit dem Befehl whois nmap.org ermittelt.
+
+d) Um eine größere Menge an Adressen nach offenen TCP-Ports zu scannen, kann man beim nmap-Befehl weitere Präfixe hinzufügen. -p schränkt die gescannten Ports ein. Diese gibt man als Argumente mit. -T4 sorgt für schnellere Timing-Einstellung. Die Skala geht von 0 bis 5, je höher die Zahl, desto mehr gleichzeitige Verbindungen sind möglich. Man sollte T4 aber nur für lokale Netzwerke nutzen. -n sorgt dafür, dass direkt mit IP-Adressen gearbeitet wird, nicht mit Hostnamen. mit -Pn wird jeder Host gescannt, unabhängig davon, ob er pingbar ist. Der Befehl ist sudo nmap -T4 -n -Pn -p 22,80,443 192.168.0.0/16 für die Ports 22, 80 und 443.
+
+e) Bei einem SYN-Scan werden nur die ersten zwei Schritte des Three-Way-Handshakes durchgeführt. Dadurch ist der Scan schneller und unauffälliger. Hier lautet der Befehl sudo nmap -sS 192.168.0.1.
+
+f) In meinen Scans kamen folgende Ports vor:
+	Port 646 ist ein Standard-Port für LDP, ein Routingprotokoll. Es verwendet TCP.
+	Port 53 ist ein Standard-Port für DNS. Es kann UDP oder TCP verwenden, in meinem Fall TCP	
+	Port 80 ist ein Standard-Port für HTTP, wieder mit TCP.
+	Port 5000 hat keinen fest definierten nutzen, wird aber bei mir für UPnP genutzt. 
+
+
+Aufgabe 3
+
+Um DHCP-Pakete zu verschicken, muss man die Netzwerkverbindung neu starten. Dazu habe ich die Befehle sudo dhclient -r und sudo dhclient -v genutzt. DHCP-Pakete können unterschiedliche Namen und entsprechend unterschiedliche Funktionen haben. Um die zugewiesene IP-Adresse nicht mehr mit dem Client zu assoziieren, versendet der Client ein DHCP-Paket des Typs Release. Da der Adressat bekannt ist, wird diese Nachricht noch direkt an den Adressat geschickt, nicht per Broadcast an alle. Bei DHCP-Discover fällt auf, dass die eigene IP-Adresse 0.0.0.0 ist. Das liegt daran, dass noch keine Verbindung mit einem DHCP-Server besteht. Da der Client auch nicht den Standort des Servers kennt, werden die DHCP-Pakete Discover und Request als Broadcast vom Client versendet. Im Discovery-Paket befindet sich ebenfalls eine IP-Adresse, die der Client als eigene annehmen möchte, gespeichert unter Option 50. Eigentlich sollte diese erst beim Request angefragt werden, doch da ich die Verbindung manuell getrennt habe, erinnert sich der Rechner noch an die zuletzt genutzte IP-Adresse. Offer und ACK sind Pakete, die vom DHCP-Server zum Client verschickt werden.
+
+Aufgabe 4
+
+Betrachten wir die Entwicklung der Kosten der Datenvermittlung mit Startknoten A. Zur Initialisierung sind bereits die Kantengewichte zu den Nachbarknoten bekannt. Im nächsten Schritt werden die Distanzen der direkt über die Nachbarknoten erreichbaren Knoten berechnet. Sobald alle Wege zu einem Knoten ermittelt wurden, wird der günstigste Weg grün eingefärbt. Dieser Schritt wird so lange wiederholt, bis die Gewichte aller möglichen Pfade errechnet sind.
+
+Das Link-State-Routingverfahren iteriert nicht über die Nachbarknoten, sondern wendet den Dijkstra-Algorithmus an. Um dies zu können, müssen alle Kantengewichte bereits bekannt sein, nicht nur die Gewichte zu den Nachbarknoten.
+
+c) Der Nachbarknoten "C" merkt direkt, dass "D" ausfällt, z.B. durch Timeouts. Die anderen beiden Knoten "A" und "B" bemerken erst, dass "D" ausfällt, wenn sie mit "C" kommunizieren.
