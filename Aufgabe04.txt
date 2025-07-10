@@ -1,0 +1,6 @@
+Ich habe mit zwei anderen Kommilitonen zusammengearbeitet bei dieser Aufgabe, um unsere Programme zu testen.
+Wir haben uns vorab bei der Implementierung bereits abgestimmt, wie wir die einzelnen Nachrichtentypen implementieren
+um so direkt eine einheitliche Kommunikation zu ermöglichen.
+
+Da wir mit den selben Spezifikationen gearbeitet haben, war es grundsätzlich kein Problem,
+die Programme miteinander kommunizieren zu lassen. Lediglich die Firewall machte zu Beginn Probleme.

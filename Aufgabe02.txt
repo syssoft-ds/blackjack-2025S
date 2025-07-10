@@ -1,0 +1,10 @@
+Der Verbindungsaufbau muss bei allen drei Programmen kompatibel sein.
+
+Vorab muss definiert werden, welche Befehle existieren und wie diese versendet und gelesen werden können.
+Nur so können die Programme miteinander kommunizieren, wenn sie ich an dieses vorab festgelegte Protokoll haben,
+damit sie wissen, wie sie eine Nachricht verarbeiten können, wenn sie diese erhalten, bzw. wie eine Nachricht
+gestaltet sein muss, damit andere Teilnehmer diese Nachricht verarbeiten können.
+So kann auch eine falsche Interpretation der Nachricht vermieden werden, wenn sich beide an die selben "Regeln" halten.
+
+Dies haben wir beispielsweise in vergangenen Übungen darüber geregelt, dass wir gemeinsame Spezifikationen
+erarbeitet haben und diese alle bei unseren Implementierungen berücksichtigt haben.
